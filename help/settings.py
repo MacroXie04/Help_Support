@@ -25,12 +25,17 @@ SECRET_KEY = 'django-insecure-r0(_)sd+sh#ja7b!uyhsndwlpht9uvgt)-zg%8_qwd49$4w-(+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+LOGIN_REDIRECT_URL = '/index/'
 
 # Application definition
 
 INSTALLED_APPS = [
+    # The HELP app
+    'index',
+
+    # Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

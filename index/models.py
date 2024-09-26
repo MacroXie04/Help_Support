@@ -1,22 +1,24 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.utils import timezone
 
 # Create your models here.
 
 class Content(models.Model):
-    title = models.CharField(max_length=100)
-    body = models.TextField()
-    generate_time  = models.DateTimeField(auto_now_add=True)
-    push_user = models.CharField(max_length=100)
-
-
-    def __str__(self):
-        return self.title
-
-class User(models.Model):
-    username = models.CharField(max_length=100)
-    password = models.CharField(max_length=100)
-    email = models.EmailField()
-    register_time = models.DateTimeField(auto_now_add=True)
+    content = models.TextField()
+    push_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    push_time  = models.DateTimeField(auto_now_add=True)
+    time_limit = models.DateTimeField()
+    state = models.TextField(blank=True)
+    accept_user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='accepted_content')
 
     def __str__(self):
-        return self.username
+        return self.state
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.user

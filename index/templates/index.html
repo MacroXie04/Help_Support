@@ -105,6 +105,8 @@
         <small>Countdown:
             <span class="countdown" data-end-time="{{ content.time_limit }}"></span>
         </small>
+        <br>
+        <a href="{% url 'content' content.id %}">View Details</a>
     </li>
     {% empty %}
     <li>No content available.</li>

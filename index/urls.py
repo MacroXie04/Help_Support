@@ -1,4 +1,4 @@
-# the urls.py for ranking
+# the urls.py for index
 
 from django.urls import path
 from index import views
@@ -6,10 +6,8 @@ from index import views
 urlpatterns = [
     path('', views.index, name='index'),
 
-    path('login/', views.login, name='login'),
+    path('content/<int:content_id>/', views.content, name='content'),
 
-    path('register/', views.register, name='register'),
-
-
+    path('add/', views.add_content, name='add_content'),
 
 ]

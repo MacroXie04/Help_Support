@@ -27,13 +27,16 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-LOGIN_REDIRECT_URL = '/index/'
+# @login required path
+LOGIN_REDIRECT_URL = '/login/'
 
 # Application definition
 
 INSTALLED_APPS = [
     # The HELP app
     'index',
+    'account',
+    'chat',
 
     # Django apps
     'django.contrib.admin',

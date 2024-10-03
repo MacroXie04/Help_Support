@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<ul>
+
+    <li>
+        <strong>{{ content.push_user.username }}:</strong> {{ content.content }}
+        <br>
+        <small>Posted on: {{ content.push_time }}</small>
+        <br>
+        <small>Countdown:
+            <span class="countdown" data-end-time="{{ content.time_limit }}"></span></small>
+        <br>
+    </li>
+
+</ul>
+
+
+</body>
+</html>

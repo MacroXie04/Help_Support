@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content List with Countdown</title>
+    <script>
+        function startCountdown() {
+            // Get all countdown elements
+            var countdownElements = document.querySelectorAll('.countdown');
+            countdownElements.forEach(function (element) {
+                var endTime = new Date(element.getAttribute('data-end-time')).getTime();
+
+                // Update the count down every 1 second
+                var x = setInterval(function () {
+                    var now = new Date().getTime();
+                    var distance = endTime - now;
+
+                    // Time calculations for days, hours, minutes and seconds
+                    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    // Display the result in the element
+                    element.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+
+                    // If the count down is finished, write some text
+                    if (distance < 0) {
+                        clearInterval(x);
+                        element.innerHTML = "EXPIRED";
+                    }
+                }, 1000);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            startCountdown();
+        });
+    </script>
+    <style>
+        /* 样式信息 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: white;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        li strong {
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        small {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .countdown {
+            font-weight: bold;
+            color: #d9534f;
+            font-size: 1rem;
+        }
+
+        .countdown.expired {
+            color: #999;
+        }
+
+        .countdown-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .countdown-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<ul>
+    {% for content in contents %}
+    <li>
+        <strong>{{ content.push_user.username }}:</strong> {{ content.content }}
+        <br>
+        <small>Posted on: {{ content.push_time }}</small>
+        <br>
+        <small>Countdown:
+            <span class="countdown" data-end-time="{{ content.time_limit }}"></span>
+        </small>
+        <br>
+        <a href="{% url 'content' content.id %}">View Details</a>
+    </li>
+    {% empty %}
+    <li>No content available.</li>
+    {% endfor %}
+</ul>
+</body>
+</html>

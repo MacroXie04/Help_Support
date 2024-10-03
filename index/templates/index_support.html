@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>支持内容列表</title>
+</head>
+<body>
+<h1>支持内容列表</h1>
+<ul>
+    {% for content in support_contents %}
+        <li>
+            <strong>标题:</strong> {{ content.title }} <br>
+            <strong>内容:</strong> {{ content.content }} <br>
+            <strong>截止时间:</strong> {{ content.time_limit }} <br>
+            <strong>最多接受用户数:</strong> {{ content.max_accept_user }} <br>
+        </li>
+    {% empty %}
+        <p>目前没有支持内容。</p>
+    {% endfor %}
+</ul>
+</body>
+</html>

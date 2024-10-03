@@ -6,8 +6,13 @@ from index import views
 urlpatterns = [
     path('', views.index, name='index'),
 
-    path('content/<int:content_id>/', views.content, name='content'),
+    path('help/', views.index_help, name='index_help'),
 
-    path('add/', views.add_content, name='add_content'),
+    path('support/', views.index_support, name='index_support'),
+
+    path('add_help_content/', views.add_help_content, name='add_help_content'),
+
+    path('add_support_content/', views.add_support_content, name='add_support_content'),
+
 
 ]

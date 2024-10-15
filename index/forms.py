@@ -18,10 +18,11 @@ class HelpContentForm(forms.ModelForm):
         validators=[validate_future_time]
     )
     max_accept_user = forms.IntegerField(min_value=1, required=True, label="Maximum number of accepted users", initial=1)
+    total_money = forms.FloatField(min_value=0.0, required=True, label="Total money")
 
     class Meta:
         model = HelpContent
-        fields = ['content', 'time_limit', 'max_accept_user']
+        fields = ['content', 'time_limit', 'max_accept_user', 'total_money']
 
 
 class SupportContentForm(forms.ModelForm):
@@ -33,7 +34,8 @@ class SupportContentForm(forms.ModelForm):
         validators=[validate_future_time]
     )
     max_accept_user = forms.IntegerField(min_value=1, required=True, label="Maximum number of accepted users", initial=1)
+    total_money = forms.FloatField(min_value=0.0, required=True, label="Total money")
 
     class Meta:
         model = SupportContent
-        fields = ['content', 'time_limit', 'max_accept_user']
+        fields = ['content', 'time_limit', 'max_accept_user', 'total_money']

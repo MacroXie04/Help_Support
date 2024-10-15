@@ -10,9 +10,7 @@ urlpatterns = [
 
     path('support/', views.index_support, name='index_support'),
 
-    path('add_help_content/', views.add_help_content, name='add_help_content'),
-
-    path('add_support_content/', views.add_support_content, name='add_support_content'),
+    path('add/', views.add_content, name='add_content'),
 
 
 ]

@@ -1,16 +1,159 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="isPWA">
 <head>
-    <meta charset="UTF-8">
-    <title>Register</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'fonts/bootstrap-icons.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/style.css' %}">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&amp;family=Roboto:wght@400;500;700&amp;display=swap"
+          rel="stylesheet">
+    <meta id="theme-check" name="theme-color" content="#FFFFFF">
+    <title>{% block title %}Help and Support{% endblock %}</title>
+    {% block style %}
+    {% endblock %}
+
 </head>
-<body>
-<h2>Register</h2>
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ user_form.as_p }}
-    {{ profile_form.as_p }}
-    <button type="submit">Register</button>
-</form>
+
+<body class="theme-light">
+
+<div id="preloader">
+    <div class="spinner-border color-highlight" role="status"></div>
+</div>
+
+<div id="page">
+
+    <!-- Header -->
+    <div class="header-bar header-fixed header-app header-bar-detached">
+        <a data-bs-toggle="offcanvas" data-bs-target="#menu-main" href="#"><i class="bi bi-list color-theme"></i></a>
+        <a href="#" class="header-title color-theme">Help and Support</a>
+    </div>
+
+
+    <!-- Main Sidebar-->
+    <div id="menu-main" data-menu-active="nav-homes" data-menu-load="menu-main.html"
+         style="width:280px;" class="offcanvas offcanvas-start offcanvas-detached rounded-m">
+    </div>
+
+    <!-- Menu Highlights-->
+    <div id="menu-color" data-menu-load="menu-highlights.html"
+         style="height:340px" class="offcanvas offcanvas-bottom offcanvas-detached rounded-m">
+    </div>
+
+    <!-- Main Bell-->
+    <div id="menu-bell" data-menu-load="menu-bell.html"
+         style="height:400px;" class="offcanvas offcanvas-top offcanvas-detached rounded-m">
+    </div>
+
+    <!-- Your Page Content Goes Here-->
+    <div class="page-content pb-0 mb-0">
+        <div class="card card-style m-0 bg-transparent shadow-0 bg-10 rounded-0" data-card-height="cover"
+             style="height: 960px;">
+            <div class="card-center">
+                <div class="card card-style">
+                    <div class="content">
+                        <h1 class="text-center font-800 font-30 mb-2">Sign Up</h1>
+                        <p class="text-center font-13 mt-n2 mb-3">Create your Account</p>
+                        <form method="POST" action="{% url 'register' %}">
+                            {% csrf_token %}
+                            <div class="form-custom form-label form-icon mb-3">
+                                <i class="bi bi-person-circle font-14"></i>
+                                {{ form.username.errors }}
+                                {{ form.username }}
+                                <label for="id_username" class="color-theme">Your Username</label>
+                                <span>(required)</span>
+                            </div>
+                            <div class="form-custom form-label form-icon mb-3">
+                                <i class="bi bi-at font-16"></i>
+                                {{ form.email.errors }}
+                                {{ form.email }}
+                                <label for="id_email" class="color-theme">Email Address</label>
+                                <span>(required)</span>
+                            </div>
+                            <div class="form-custom form-label form-icon mb-3">
+                                <i class="bi bi-phone font-16"></i>
+                                {{ form.phone_number.errors }}
+                                {{ form.phone_number }}
+                                <label for="id_phone_number" class="color-theme">Phone Number</label>
+                                <span>(required)</span>
+                            </div>
+                            <div class="form-custom form-label form-icon mb-3">
+                                <i class="bi bi-asterisk font-12"></i>
+                                {{ form.password1.errors }}
+                                {{ form.password1 }}
+                                <label for="id_password1" class="color-theme">Password</label>
+                                <span>(required)</span>
+                            </div>
+                            <div class="form-custom form-label form-icon mb-3">
+                                <i class="bi bi-asterisk font-12"></i>
+                                {{ form.password2.errors }}
+                                {{ form.password2 }}
+                                <label for="id_password2" class="color-theme">Confirm Password</label>
+                                <span>(required)</span>
+                            </div>
+                            <button type="submit"
+                                    class="btn rounded-sm btn-m gradient-blue text-uppercase font-700 mt-4 mb-3 btn-full shadow-bg shadow-bg-s">
+                                Create Account
+                            </button>
+                        </form>
+                        <div class="d-flex">
+                            <div>
+                                <a href="{% url 'login' %}" class="color-theme opacity-30 font-12">Login Account</a>
+                            </div>
+                            <div class="ms-auto">
+                                <a href="{% url 'register' %}" class="color-theme opacity-30 font-12">Create Account</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- End of Page Content-->
+    <div class="offcanvas offcanvas-bottom rounded-m offcanvas-detached" id="menu-install-pwa-ios">
+        <div class="content">
+            <img src="app/icons/icon-128x128.png" alt="img" width="80" class="rounded-l mx-auto my-4">
+            <h1 class="text-center font-800 font-20">Add Duo to Home Screen</h1>
+            <p class="boxed-text-xl">
+                Install Duo on your home screen, and access it just like a regular app. Open your Safari menu and tap
+                "Add to Home Screen".
+            </p>
+            <a href="#"
+               class="pwa-dismiss close-menu gradient-blue shadow-bg shadow-bg-s btn btn-s btn-full text-uppercase font-700  mt-n2"
+               data-bs-dismiss="offcanvas">Maybe Later</a>
+        </div>
+    </div>
+
+    <div class="offcanvas offcanvas-bottom rounded-m offcanvas-detached" id="menu-install-pwa-android">
+        <div class="content">
+            <img src="app/icons/icon-128x128.png" alt="img" width="80" class="rounded-m mx-auto my-4">
+            <h1 class="text-center font-700 font-20">Install Duo</h1>
+            <p class="boxed-text-l">
+                Install Duo to your Home Screen to enjoy a unique and native experience.
+            </p>
+            <a href="#"
+               class="pwa-install btn btn-m rounded-s text-uppercase font-900 gradient-highlight shadow-bg shadow-bg-s btn-full">Add
+                to Home Screen</a><br>
+            <a href="#" data-bs-dismiss="offcanvas"
+               class="pwa-dismiss close-menu color-theme text-uppercase font-900 opacity-50 font-11 text-center d-block mt-n1">Maybe
+                later</a>
+        </div>
+    </div>
+
+</div>
+
+
+{% block scripts %}
+    <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
+    <script src="{% static 'scripts/custom.js' %}"></script>
+    <script src="{% static 'plugins/glightbox/glightbox.js' %}"></script>
+{% endblock %}
 </body>
 </html>

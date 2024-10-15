@@ -4,53 +4,36 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from .forms import HelpContentForm, SupportContentForm
 from django.contrib.auth.decorators import login_required
+from .models import HelpContent
+from .models import SupportContent
 
-@login_required(login_url='/account/login/')
+
 def index(request):
-    return redirect(index_help)
+    return redirect('index_help')
 
 
 @login_required(login_url='/account/login/')
 def index_help(request):
-    pass
+    help_contents = HelpContent.objects.filter(is_show=True)
+
+    context = {
+        'help_contents': help_contents
+    }
+
+    return render(request, 'index/index_help.html', context)
 
 
 @login_required(login_url='/account/login/')
 def index_support(request):
-    pass
+    support_contents = SupportContent.objects.filter(is_show=True)
+
+    context = {
+        'support_contents': support_contents
+    }
+    return render(request, 'index/index_support.html', context)
 
 
 @login_required(login_url='/account/login/')
-def add_help_content(request):
-    if not request.user.is_active:
-        return redirect('account_disabled')
+def add_content(request):
+    return render(request, 'add/add_content.html')
 
-    if request.method == 'POST':
-        form = HelpContentForm(request.POST)
-        if form.is_valid():
-            help_content = form.save(commit=False)
-            help_content.user = request.user
-            help_content.save()
-            messages.success(request, "Help content added successfully.")
-            return redirect('help_content_list')
-    else:
-        form = HelpContentForm()
-    return render(request, 'add_help_content.html', {'form': form})
-
-
-@login_required(login_url='/account/login/')
-def add_support_content(request):
-    if not request.user.is_active:
-        return redirect('account_disabled')
-
-    if request.method == 'POST':
-        form = SupportContentForm(request.POST)
-        if form.is_valid():
-            support_content = form.save(commit=False)
-            support_content.user = request.user
-            support_content.save()
-            messages.success(request, "支持内容已成功添加。")
-            return redirect('support_content_list')
-    else:
-        form = SupportContentForm()
-    return render(request, 'add_support_content.html', {'form': form})

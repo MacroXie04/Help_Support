@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+import os
+import uuid
 
 
 class UserProfile(models.Model):
@@ -21,7 +23,6 @@ class UserProfile(models.Model):
 
     # profile info
     creatAt = models.DateTimeField(default=timezone.now)
-    img = models.ImageField(upload_to='account/static/', blank=True)
 
     gender = models.CharField(max_length=100, blank=True)
 

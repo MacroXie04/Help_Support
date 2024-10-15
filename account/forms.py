@@ -4,11 +4,31 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 # User Registration Form
 class UserRegisterForm(UserCreationForm):
-    username = forms.CharField(max_length=30, required=True, label="Username")
-    email = forms.EmailField(required=True, label="Email")
-    phone_number = forms.CharField(max_length=15, required=True, label="Phone Number")
-    password1 = forms.CharField(widget=forms.PasswordInput, label="Password")
-    password2 = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
+    username = forms.CharField(
+        max_length=30,
+        required=True,
+        label="Username",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    email = forms.EmailField(
+        required=True,
+        label="Email",
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
+    phone_number = forms.CharField(
+        max_length=15,
+        required=True,
+        label="Phone Number",
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        label="Password"
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        label="Confirm Password"
+    )
 
     class Meta:
         model = User
@@ -25,5 +45,18 @@ class UserRegisterForm(UserCreationForm):
 
 # User Login Form
 class UserLoginForm(AuthenticationForm):
-    username = forms.CharField(max_length=30, required=True)
-    password = forms.CharField(widget=forms.PasswordInput, label="Password")
+    username = forms.CharField(
+        label="Username",
+        max_length=150,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter your username'})
+    )
+    password = forms.CharField(
+        label="Password",
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter your password'})
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(UserLoginForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if self.errors.get(field_name):
+                field.widget.attrs['class'] += ' is-invalid'

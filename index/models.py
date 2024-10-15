@@ -9,12 +9,12 @@ class HelpContent(models.Model):
 
     # time info
     creat_time = models.DateTimeField(auto_now_add=True)
-    time_limit = models.DateTimeField(blank=True)
+    time_limit = models.DateTimeField(blank=True, null=True)
 
     # state info
     is_show = models.BooleanField(default=True)
     is_completed = models.BooleanField(default=False)
-    completed_data = models.DateTimeField(blank=True)
+    completed_data = models.DateTimeField(blank=True, null=True)
     state = models.TextField(default='waiting for accept')
 
     # money info
@@ -23,13 +23,14 @@ class HelpContent(models.Model):
 
     # foreign key link to push and accept users
     max_accept_user = models.IntegerField(default=1)
-    push_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='helpcontent_push_users')
+    push_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='HelpContent_push_users')
     unverified_accept_user = models.ForeignKey(User, on_delete=models.CASCADE,
-                                               related_name='helpcontent_unverified_users')
-    verified_accept_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='helpcontent_verified_users')
+                                               related_name='HelpContent_unverified_users', blank=True, null=True)
+    verified_accept_user = models.ForeignKey(User, on_delete=models.CASCADE,
+                                             related_name='HelpContent_verified_users', blank=True, null=True)
 
     def __str__(self):
-        return self.state
+        return self.push_user.username + ' ' + self.state
 
 
 class SupportContent(models.Model):
@@ -39,20 +40,25 @@ class SupportContent(models.Model):
 
     # time info
     creat_time = models.DateTimeField(auto_now_add=True)
-    time_limit = models.DateTimeField(blank=True)
+    time_limit = models.DateTimeField(blank=True, null=True)
 
     # state info
     is_show = models.BooleanField(default=True)
     is_completed = models.BooleanField(default=False)
+    completed_data = models.DateTimeField(blank=True, null=True)
     state = models.TextField(default='waiting for accept')
+
+    # money info
+    total_money = models.FloatField(default=0.0)
+    money_per_user = models.FloatField(default=0.0)
 
     # foreign key link to push and accept users
     max_accept_user = models.IntegerField(default=1)
-    push_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='supportcontent_push_users')
+    push_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='SupportContent_push_users')
     unverified_accept_user = models.ForeignKey(User, on_delete=models.CASCADE,
-                                               related_name='supportcontent_unverified_users')
+                                               related_name='SupportContent_unverified_users', blank=True, null=True)
     verified_accept_user = models.ForeignKey(User, on_delete=models.CASCADE,
-                                             related_name='supportcontent_verified_users')
+                                             related_name='SupportContent_verified_users', blank=True, null=True)
 
     def __str__(self):
-        return self.state
+        return self.push_user.username + ' ' + self.state

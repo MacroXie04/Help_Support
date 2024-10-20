@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'fonts/bootstrap-icons.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/style.css' %}">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&amp;family=Roboto:wght@400;500;700&amp;display=swap"
+          rel="stylesheet">
+    <meta id="theme-check" name="theme-color" content="#FFFFFF">
+    <title>{% block title %}Help and Support{% endblock %}</title>
+    {% block style %}
+    {% endblock %}
+
+</head>
+
+<body class="theme-light">
+<!-- Header -->
+<div class="header-bar header-fixed header-app header-bar-detached">
+    <a href="{% url 'index' %}" class="header-title color-theme" style="padding-left: 20px">Help and Support</a>
+</div>
+
+<!-- Footer Bar-->
+<div id="footer-bar" class="footer-bar footer-bar-detached">
+    <a href="{% url 'index_help' %}"><i class="bi bi-arrow-bar-up"></i><span>Help</span></a>
+    <a href="{% url 'index_support' %}"><i class="bi bi-arrow-bar-down"></i><span>Support</span></a>
+    <a href="{% url 'add_content' %}"><i class="bi bi-patch-plus"></i><span>Add</span></a>
+    <a href="#"><i class="bi bi-archive"></i><span>My Content</span></a>
+    <a href="{% url 'account_page' %}" class="active-nav"><i class="bi bi-file-person"></i><span>Account</span></a>
+</div>
+
+
+<!-- Your Page Content Goes Here-->
+<div class="page-content header-clear-medium">
+    {% block content %}{% endblock %}
+    <div class="card card-style">
+        <div class="content mb-0">
+            <h1 class="pb-2">Basic Information</h1>
+            <div class="form-custom form-label form-icon mb-3">
+                <i class="bi bi-person-badge"></i>
+                <input type="text" class="form-control rounded-xs" value="{{ user.username }}" readonly>
+                <label for="c1" class="color-theme form-label-always-active font-10 opacity-50">Username</label>
+            </div>
+            <div class="form-custom form-label form-icon mb-3">
+                <i class="bi bi-person-circle font-14"></i>
+                <input type="text" class="form-control rounded-xs"
+                       value="{{ user_profile.first_name }} {{ user_profile.last_name }}" readonly>
+                <label for="c1" class="color-theme form-label-always-active font-10 opacity-50">Name</label>
+            </div>
+            <div class="form-custom form-label form-icon mb-3">
+                <i class="bi bi-gender-ambiguous font-13"></i>
+                <input type="text" class="form-control rounded-xs" value="{{ user_profile.gender }}" readonly>
+                <label for="c1" class="color-theme form-label-always-active font-10 opacity-50">Gender</label>
+            </div>
+            <div class="form-custom form-label form-icon mb-3">
+                <i class="bi bi-telephone"></i>
+                <input type="text" class="form-control rounded-xs" value="{{ user_profile.phone }}" readonly>
+                <label for="c1" class="color-theme form-label-always-active font-10 opacity-50">Phone</label>
+            </div>
+            <div class="form-custom form-label form-icon mb-3">
+                <i class="bi bi-envelope"></i>
+                <input type="text" class="form-control rounded-xs" value="{{ user.email }}" readonly>
+                <label for="c1" class="color-theme form-label-always-active font-10 opacity-50">Email</label>
+            </div>
+            <div class="form-custom form-label form-icon mb-3">
+                <i class="bi bi-calendar-event"></i>
+                <input type="text" class="form-control rounded-xs" value="{{ user_profile.creatAt }}" readonly>
+                <label for="c1" class="color-theme form-label-always-active font-10 opacity-50">Created At</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-style">
+        <div class="content mb-2">
+            <h1 class="pb-2">Account Balance</h1>
+
+            <div class="form-custom form-label form-icon mb-3">
+                <i class="bi bi-wallet"></i>
+                <input type="text" class="form-control rounded-xs" placeholder="{{ account_balance }}" readonly>
+                <label for="c1" class="color-theme form-label-always-active font-10 opacity-50">Account Balance</label>
+            </div>
+
+            <a href="{% url 'add_balance' %}"
+               class="btn mx-3 mb-4 btn-full btn-margins gradient-blue rounded-s btn-m text-uppercase font-900">Add
+                Balance</a>
+        </div>
+    </div>
+
+    <div class="card card-style">
+        <div class="content mb-2">
+            <h1 class="pb-2">Account Setting</h1>
+            <a href="#"
+               class="btn mx-3 mb-4 btn-full btn-margins gradient-blue rounded-s btn-m text-uppercase font-900">Edit
+                Account</a>
+            <a href="{% url 'logout' %}"
+               class="btn mx-3 mb-4 btn-full btn-margins gradient-blue rounded-s btn-m text-uppercase font-900">logout</a>
+        </div>
+    </div>
+
+
+</div>
+<!-- End of Page Content-->
+
+
+{% block scripts %}
+    <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
+
+{% endblock %}
+</body>
+</html>

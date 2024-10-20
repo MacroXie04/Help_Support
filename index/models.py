@@ -5,11 +5,10 @@ from django.contrib.auth.models import User
 class HelpContent(models.Model):
     # content and enhanced content in HTML format
     content = models.TextField()
-    enhanced_content = models.TextField(blank=True)
 
     # time info
     creat_time = models.DateTimeField(auto_now_add=True)
-    time_limit = models.DateTimeField(blank=True, null=True)
+    accept_time_limit = models.DateTimeField(blank=True, null=True)
 
     # state info
     is_show = models.BooleanField(default=True)
@@ -19,7 +18,6 @@ class HelpContent(models.Model):
 
     # money info
     total_money = models.FloatField(default=0.0)
-    money_per_user = models.FloatField(default=0.0)
 
     # foreign key link to push and accept users
     max_accept_user = models.IntegerField(default=1)
@@ -30,17 +28,16 @@ class HelpContent(models.Model):
                                              related_name='HelpContent_verified_users', blank=True, null=True)
 
     def __str__(self):
-        return self.push_user.username + ' ' + self.state
+        return self.push_user.username + ' ' + self.state + ' ' + self.content
 
 
 class SupportContent(models.Model):
     # content and enhanced content in HTML format
     content = models.TextField()
-    enhanced_content = models.TextField(blank=True)
 
     # time info
     creat_time = models.DateTimeField(auto_now_add=True)
-    time_limit = models.DateTimeField(blank=True, null=True)
+    accept_time_limit = models.DateTimeField(blank=True, null=True)
 
     # state info
     is_show = models.BooleanField(default=True)
@@ -50,7 +47,6 @@ class SupportContent(models.Model):
 
     # money info
     total_money = models.FloatField(default=0.0)
-    money_per_user = models.FloatField(default=0.0)
 
     # foreign key link to push and accept users
     max_accept_user = models.IntegerField(default=1)
@@ -61,4 +57,4 @@ class SupportContent(models.Model):
                                              related_name='SupportContent_verified_users', blank=True, null=True)
 
     def __str__(self):
-        return self.push_user.username + ' ' + self.state
+        return self.push_user.username + ' ' + self.state + self.content

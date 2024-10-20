@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" class="isPWA">
+<html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,117 +22,88 @@
 
 <body class="theme-light">
 
-<div id="preloader">
-    <div class="spinner-border color-highlight" role="status"></div>
+<!-- Header -->
+<div class="header-bar header-fixed header-app header-bar-detached">
+    <a href="{% url 'index' %}" class="header-title color-theme" style="padding-left: 20px">Help and Support</a>
 </div>
 
-<div id="page">
-
-    <!-- Header -->
-    <div class="header-bar header-fixed header-app header-bar-detached">
-        <a data-bs-toggle="offcanvas" data-bs-target="#menu-main" href="#"><i class="bi bi-list color-theme"></i></a>
-        <a href="#" class="header-title color-theme">Help and Support</a>
-    </div>
-
-
-    <!-- Main Sidebar-->
-    <div id="menu-main" data-menu-active="nav-homes" data-menu-load="menu-main.html"
-         style="width:280px;" class="offcanvas offcanvas-start offcanvas-detached rounded-m">
-    </div>
-
-    <!-- Menu Highlights-->
-    <div id="menu-color" data-menu-load="menu-highlights.html"
-         style="height:340px" class="offcanvas offcanvas-bottom offcanvas-detached rounded-m">
-    </div>
-
-    <!-- Main Bell-->
-    <div id="menu-bell" data-menu-load="menu-bell.html"
-         style="height:400px;" class="offcanvas offcanvas-top offcanvas-detached rounded-m">
-    </div>
-
-    <!-- Your Page Content Goes Here-->
-    <div class="page-content mb-0 pb-0">
-        <div class="card card-style mb-0 bg-transparent shadow-0 bg-3 mx-0 rounded-0" data-card-height="cover"
-             style="height: 891px;">
-            <div class="card-center">
-                <div class="card card-style">
-                    <div class="content">
-                        <h1 class="text-center font-800 font-30 mb-2">Sign In</h1>
-                        <form method="POST" action="{% url 'login' %}">
-                            {% csrf_token %}
-                            <div class="form-custom form-label form-icon mb-3">
-                                <i class="bi bi-person-circle font-14"></i>
-                                {{ form.username.errors }}
-                                {{ form.username }}
-                                <label for="id_username" class="color-theme">Account Name</label>
-                                <span>(required)</span>
+<!-- Your Page Content Goes Here-->
+<div class="page-content mb-0 pb-0">
+    <div class="card card-style mb-0 bg-transparent shadow-0 bg-3 mx-0 rounded-0" data-card-height="cover"
+         style="height: 891px;">
+        <div class="card-center">
+            <div class="card card-style">
+                <div class="content">
+                    <h1 class="text-center font-800 font-30 mb-2">Sign In</h1>
+                    <p class="text-center font-13 mt-n2 mb-3">Enter your account details</p>
+                    <form method="POST" action="{% url 'login' %}" novalidate>
+                        {% csrf_token %}
+                        <!-- Display non-field errors -->
+                        {% if form.non_field_errors %}
+                            <div class="alert bg-fade-red color-red-dark alert-dismissible rounded-s fade show" role="alert">
+                                {% for error in form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
                             </div>
-                            <div class="form-custom form-label form-icon mb-3">
-                                <i class="bi bi-asterisk font-12"></i>
-                                {{ form.password.errors }}
-                                {{ form.password }}
-                                <label for="id_password" class="color-theme">Password</label>
-                                <span>(required)</span>
+                        {% endif %}
+                        
+                        <!-- Username Field -->
+                        <div class="form-custom form-label form-icon mb-3">
+                            <i class="bi bi-person-circle font-14"></i>
+                            <input type="text"
+                                   class="form-control rounded-xs {% if form.username.errors %}is-invalid{% endif %}"
+                                   id="username" name="username" placeholder="Username" required>
+                            <label for="username" class="color-theme">Username</label>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">
+                                {% for error in form.username.errors %}
+                                    {{ error }}
+                                {% endfor %}
                             </div>
-                            <button type="submit"
-                                    class="btn rounded-sm btn-m gradient-green text-uppercase font-700 mt-4 mb-3 btn-full shadow-bg shadow-bg-s">
-                                Sign In
-                            </button>
-                        </form>
-                        <div class="d-flex">
-                            <div>
-                                <a href="#" class="color-theme opacity-30 font-12">Recover Account (Under
-                                    Development)</a>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="form-custom form-label form-icon mb-3">
+                            <i class="bi bi-asterisk font-12"></i>
+                            <input type="password"
+                                   class="form-control rounded-xs {% if form.password.errors %}is-invalid{% endif %}"
+                                   id="password" name="password" placeholder="Password" required>
+                            <label for="password" class="color-theme">Password</label>
+                            <div class="valid-feedback"></div>
+                            <div class="invalid-feedback">
+                                {% for error in form.password.errors %}
+                                    {{ error }}
+                                {% endfor %}
                             </div>
-                            <div class="ms-auto">
-                                <a href="{% url 'register' %}" class="color-theme opacity-30 font-12">Create Account</a>
-                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit"
+                                class="btn btn-full bg-blue-dark rounded-xs text-uppercase font-700 w-100 btn-s mt-4">
+                            Sign In
+                        </button>
+                    </form>
+                    <div class="d-flex">
+                        <div>
+                            <a href="#" class="color-theme opacity-30 font-12">Recover Account (Under
+                                Development)</a>
+                        </div>
+                        <div class="ms-auto">
+                            <a href="{% url 'register' %}" class="color-theme opacity-30 font-12">Create Account</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-
-    <!-- End of Page Content-->
-    <div class="offcanvas offcanvas-bottom rounded-m offcanvas-detached" id="menu-install-pwa-ios">
-        <div class="content">
-            <img src="app/icons/icon-128x128.png" alt="img" width="80" class="rounded-l mx-auto my-4">
-            <h1 class="text-center font-800 font-20">Add Duo to Home Screen</h1>
-            <p class="boxed-text-xl">
-                Install Duo on your home screen, and access it just like a regular app. Open your Safari menu and tap
-                "Add to Home Screen".
-            </p>
-            <a href="#"
-               class="pwa-dismiss close-menu gradient-blue shadow-bg shadow-bg-s btn btn-s btn-full text-uppercase font-700  mt-n2"
-               data-bs-dismiss="offcanvas">Maybe Later</a>
-        </div>
-    </div>
-
-    <div class="offcanvas offcanvas-bottom rounded-m offcanvas-detached" id="menu-install-pwa-android">
-        <div class="content">
-            <img src="app/icons/icon-128x128.png" alt="img" width="80" class="rounded-m mx-auto my-4">
-            <h1 class="text-center font-700 font-20">Install Duo</h1>
-            <p class="boxed-text-l">
-                Install Duo to your Home Screen to enjoy a unique and native experience.
-            </p>
-            <a href="#"
-               class="pwa-install btn btn-m rounded-s text-uppercase font-900 gradient-highlight shadow-bg shadow-bg-s btn-full">Add
-                to Home Screen</a><br>
-            <a href="#" data-bs-dismiss="offcanvas"
-               class="pwa-dismiss close-menu color-theme text-uppercase font-900 opacity-50 font-11 text-center d-block mt-n1">Maybe
-                later</a>
-        </div>
-    </div>
-
 </div>
+
+<!-- End of Page Content-->
+
 
 
 {% block scripts %}
     <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
-    <script src="{% static 'scripts/custom.js' %}"></script>
-    <script src="{% static 'plugins/glightbox/glightbox.js' %}"></script>
 {% endblock %}
 </body>
 </html>

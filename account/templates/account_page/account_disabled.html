@@ -28,24 +28,27 @@
     <a href="{% url 'index' %}" class="header-title color-theme" style="padding-left: 20px">Help and Support</a>
 </div>
 
-<!-- Footer Bar-->
-<div id="footer-bar" class="footer-bar footer-bar-detached">
-    <a href="{% url 'index_help' %}"><i class="bi bi-arrow-bar-up"></i><span>Help</span></a>
-    <a href="{% url 'index_support' %}" class="active-nav"><i class="bi bi-arrow-bar-down"></i><span>Support</span></a>
-    <a href="{% url 'add_content' %}"><i class="bi bi-patch-plus"></i><span>Add</span></a>
-    <a href="#"><i class="bi bi-archive"></i><span>My Content</span></a>
-    <a href="{% url 'account_page' %}"><i class="bi bi-file-person"></i><span>Account</span></a>
-</div>
-
 
 <!-- Your Page Content Goes Here-->
 <div class="page-content header-clear-medium">
     {% block content %}{% endblock %}
+    <div class="card card-style">
+        <div class="content">
+            <h4>Account Disabled</h4>
+            <p></p>
+            <div class="form-custom form-label mb-3 form-icon">
+                <i class="bi bi-person-circle color-blue-dark font-14"></i>
+                <input type="text" class="form-control rounded-xs" id="c1" value="Hongzhe" readonly>
+                <label for="c1" class="form-label-always-active color-blue-dark">Disabled User</label>
+            </div>
+            <p>
+                自己用这个干啥B事自己不知道吗？！！！
+            </p>
+        </div>
+    </div>
 
 </div>
 <!-- End of Page Content-->
-
-
 
 
 {% block scripts %}

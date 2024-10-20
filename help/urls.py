@@ -4,7 +4,7 @@ from django.urls import path
 from django.urls.conf import include
 
 urlpatterns = [
-    path('accounts/admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
 
     # index
     path('', include('index.urls')),

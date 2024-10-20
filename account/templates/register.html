@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" class="isPWA">
+<html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,137 +22,157 @@
 
 <body class="theme-light">
 
-<div id="preloader">
-    <div class="spinner-border color-highlight" role="status"></div>
+<!-- Header -->
+<div class="header-bar header-fixed header-app header-bar-detached">
+    <a href="{% url 'index' %}" class="header-title color-theme" style="padding-left: 20px">Help and Support</a>
 </div>
 
-<div id="page">
+<!-- Your Page Content Goes Here-->
+<div class="page-content header-clear-medium">
+    <div class="card card-style">
+        <div class="content">
+            <h1 class="text-center font-800 font-30 mb-2">Register</h1>
+            <p class="text-center font-13 mt-n2 mb-3">Create your Account</p>
+            <form method="POST" action="{% url 'register' %}" novalidate>
+                {% csrf_token %}
 
-    <!-- Header -->
-    <div class="header-bar header-fixed header-app header-bar-detached">
-        <a data-bs-toggle="offcanvas" data-bs-target="#menu-main" href="#"><i class="bi bi-list color-theme"></i></a>
-        <a href="#" class="header-title color-theme">Help and Support</a>
-    </div>
-
-
-    <!-- Main Sidebar-->
-    <div id="menu-main" data-menu-active="nav-homes" data-menu-load="menu-main.html"
-         style="width:280px;" class="offcanvas offcanvas-start offcanvas-detached rounded-m">
-    </div>
-
-    <!-- Menu Highlights-->
-    <div id="menu-color" data-menu-load="menu-highlights.html"
-         style="height:340px" class="offcanvas offcanvas-bottom offcanvas-detached rounded-m">
-    </div>
-
-    <!-- Main Bell-->
-    <div id="menu-bell" data-menu-load="menu-bell.html"
-         style="height:400px;" class="offcanvas offcanvas-top offcanvas-detached rounded-m">
-    </div>
-
-    <!-- Your Page Content Goes Here-->
-    <div class="page-content pb-0 mb-0">
-        <div class="card card-style m-0 bg-transparent shadow-0 bg-10 rounded-0" data-card-height="cover"
-             style="height: 960px;">
-            <div class="card-center">
-                <div class="card card-style">
-                    <div class="content">
-                        <h1 class="text-center font-800 font-30 mb-2">Create your Account</h1>
-                        <form method="POST" action="{% url 'register' %}">
-                            {% csrf_token %}
-                            <div class="form-custom form-label form-icon mb-3">
-                                <i class="bi bi-person-circle font-14"></i>
-                                {{ form.username.errors }}
-                                {{ form.username }}
-                                <label for="id_username" class="color-theme">Your Username</label>
-                                <span>(required)</span>
-                            </div>
-                            <div class="form-custom form-label form-icon mb-3">
-                                <i class="bi bi-at font-16"></i>
-                                {{ form.email.errors }}
-                                {{ form.email }}
-                                <label for="id_email" class="color-theme">Email Address</label>
-                                <span>(required)</span>
-                            </div>
-                            <div class="form-custom form-label form-icon mb-3">
-                                <i class="bi bi-phone font-16"></i>
-                                {{ form.phone_number.errors }}
-                                {{ form.phone_number }}
-                                <label for="id_phone_number" class="color-theme">Phone Number</label>
-                                <span>(required)</span>
-                            </div>
-                            <div class="form-custom form-label form-icon mb-3">
-                                <i class="bi bi-asterisk font-12"></i>
-                                {{ form.password1.errors }}
-                                {{ form.password1 }}
-                                <label for="id_password1" class="color-theme">Password</label>
-                                <span>(required)</span>
-                            </div>
-                            <div class="form-custom form-label form-icon mb-3">
-                                <i class="bi bi-asterisk font-12"></i>
-                                {{ form.password2.errors }}
-                                {{ form.password2 }}
-                                <label for="id_password2" class="color-theme">Confirm Password</label>
-                                <span>(required)</span>
-                            </div>
-                            <button type="submit"
-                                    class="btn rounded-sm btn-m gradient-blue text-uppercase font-700 mt-4 mb-3 btn-full shadow-bg shadow-bg-s">
-                                Create Account
-                            </button>
-                        </form>
-                        <div class="d-flex">
-                            <div>
-                                <a href="{% url 'login' %}" class="color-theme opacity-30 font-12">Login Account</a>
-                            </div>
-                            <div class="ms-auto">
-                                <a href="{% url 'register' %}" class="color-theme opacity-30 font-12">Create Account</a>
-                            </div>
-                        </div>
+                {% if messages %}
+                    <div class="alert bg-fade-red color-red-dark alert-dismissible rounded-s fade show">
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
                     </div>
+                {% endif %}
+
+                <div class="form-custom form-label form-icon mb-3">
+                    <i class="bi bi-person-badge"></i>
+                    <input type="text"
+                           class="form-control rounded-xs {% if form.username.errors %}is-invalid{% endif %}"
+                           id="username" name="username" placeholder="Username" required>
+                    <label for="username" class="color-theme">Username</label>
+                    <div class="invalid-feedback">
+                        {% for error in form.username.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-custom form-label form-icon mb-3">
+                    <i class="bi bi-person-circle font-14"></i>
+                    <input type="text"
+                           class="form-control rounded-xs {% if form.first_name.errors %}is-invalid{% endif %}"
+                           id="first_name" name="first_name" placeholder="First Name" required>
+                    <label for="first_name" class="color-theme">First Name</label>
+                    <div class="invalid-feedback">
+                        {% for error in form.first_name.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-custom form-label form-icon mb-3">
+                    <i class="bi bi-person-circle font-14"></i>
+                    <input type="text"
+                           class="form-control rounded-xs {% if form.last_name.errors %}is-invalid{% endif %}"
+                           id="last_name" name="last_name" placeholder="Last Name" required>
+                    <label for="last_name" class="color-theme">Last Name</label>
+                    <div class="invalid-feedback">
+                        {% for error in form.last_name.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-custom form-label mb-3 form-icon">
+                    <i class="bi bi-gender-ambiguous font-13"></i>
+                    <select class="form-select rounded-xs {% if form.gender.errors %}is-invalid{% endif %}" id="gender" name="gender" aria-label="Select Gender" required>
+                        <option selected disabled>Select Gender</option>
+                        {% for value, label in form.fields.gender.choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="gender" class="color-theme">Select Gender</label>
+                    <div class="invalid-feedback">
+                        {% for error in form.gender.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-custom form-label form-icon mb-3">
+                    <i class="bi bi-at font-16"></i>
+                    <input type="email"
+                           class="form-control rounded-xs {% if form.email.errors %}is-invalid{% endif %}"
+                           id="email" name="email" placeholder="Email Address" required>
+                    <label for="email" class="color-theme">Email Address</label>
+                    <div class="invalid-feedback">
+                        {% for error in form.email.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-custom form-label form-icon mb-3">
+                    <i class="bi bi-phone"></i>
+                    <input type="text"
+                           class="form-control rounded-xs {% if form.phone.errors %}is-invalid{% endif %}"
+                           id="phone" name="phone" placeholder="Phone Number" required>
+                    <label for="phone" class="color-theme">Phone Number</label>
+                    <div class="invalid-feedback">
+                        {% for error in form.phone.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-custom form-label form-icon mb-3">
+                    <i class="bi bi-asterisk font-12"></i>
+                    <input type="password"
+                           class="form-control rounded-xs {% if form.password1.errors %}is-invalid{% endif %}"
+                           id="password1" name="password1" placeholder="Password" required>
+                    <label for="password1" class="color-theme">Password</label>
+                    <div class="invalid-feedback">
+                        {% for error in form.password1.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-custom form-label form-icon mb-3">
+                    <i class="bi bi-asterisk font-12"></i>
+                    <input type="password"
+                           class="form-control rounded-xs {% if form.password2.errors %}is-invalid{% endif %}"
+                           id="password2" name="password2" placeholder="Confirm Password" required>
+                    <label for="password2" class="color-theme">Confirm Password</label>
+                    <div class="invalid-feedback">
+                        {% for error in form.password2.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit"
+                        class="btn btn-full bg-blue-dark rounded-xs text-uppercase font-700 w-100 btn-s mt-4">
+                    Create Account
+                </button>
+            </form>
+            <div class="d-flex">
+                <div>
+                    <a href="{% url 'login' %}" class="color-theme opacity-30 font-12">Login Account</a>
                 </div>
             </div>
         </div>
     </div>
-
-
-    <!-- End of Page Content-->
-    <div class="offcanvas offcanvas-bottom rounded-m offcanvas-detached" id="menu-install-pwa-ios">
-        <div class="content">
-            <img src="app/icons/icon-128x128.png" alt="img" width="80" class="rounded-l mx-auto my-4">
-            <h1 class="text-center font-800 font-20">Add Duo to Home Screen</h1>
-            <p class="boxed-text-xl">
-                Install Duo on your home screen, and access it just like a regular app. Open your Safari menu and tap
-                "Add to Home Screen".
-            </p>
-            <a href="#"
-               class="pwa-dismiss close-menu gradient-blue shadow-bg shadow-bg-s btn btn-s btn-full text-uppercase font-700  mt-n2"
-               data-bs-dismiss="offcanvas">Maybe Later</a>
-        </div>
-    </div>
-
-    <div class="offcanvas offcanvas-bottom rounded-m offcanvas-detached" id="menu-install-pwa-android">
-        <div class="content">
-            <img src="app/icons/icon-128x128.png" alt="img" width="80" class="rounded-m mx-auto my-4">
-            <h1 class="text-center font-700 font-20">Install Duo</h1>
-            <p class="boxed-text-l">
-                Install Duo to your Home Screen to enjoy a unique and native experience.
-            </p>
-            <a href="#"
-               class="pwa-install btn btn-m rounded-s text-uppercase font-900 gradient-highlight shadow-bg shadow-bg-s btn-full">Add
-                to Home Screen</a><br>
-            <a href="#" data-bs-dismiss="offcanvas"
-               class="pwa-dismiss close-menu color-theme text-uppercase font-900 opacity-50 font-11 text-center d-block mt-n1">Maybe
-                later</a>
-        </div>
-    </div>
-
 </div>
+
+
+
+
+
 
 
 {% block scripts %}
     <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
-    <script src="{% static 'scripts/custom.js' %}"></script>
-    <script src="{% static 'plugins/glightbox/glightbox.js' %}"></script>
 {% endblock %}
 </body>
 </html>

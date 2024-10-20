@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'fonts/bootstrap-icons.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/style.css' %}">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&amp;family=Roboto:wght@400;500;700&amp;display=swap"
+          rel="stylesheet">
+    <meta id="theme-check" name="theme-color" content="#FFFFFF">
+    <title>{% block title %}Help and Support{% endblock %}</title>
+    {% block style %}
+    {% endblock %}
+
+</head>
+
+<body class="theme-light">
+
+
+<!-- Header -->
+<div class="header-bar header-fixed header-app header-bar-detached">
+    <a data-back-button="" href="{% url 'account_page' %}"><i
+            class="bi bi-caret-left-fill font-11 color-theme ps-2"></i></a>
+    <a href="{% url 'account_page' %}" class="header-title color-theme font-13">Back to Account</a>
+</div>
+
+<!-- Footer Bar-->
+<div id="footer-bar" class="footer-bar footer-bar-detached">
+    <a href="{% url 'index_help' %}"><i class="bi bi-arrow-bar-up"></i><span>Help</span></a>
+    <a href="{% url 'index_support' %}"><i class="bi bi-arrow-bar-down"></i><span>Support</span></a>
+    <a href="{% url 'add_content' %}"><i class="bi bi-patch-plus"></i><span>Add</span></a>
+    <a href="#"><i class="bi bi-archive"></i><span>My Content</span></a>
+    <a href="{% url 'account_page' %}" class="active-nav"><i class="bi bi-file-person"></i><span>Account</span></a>
+</div>
+
+
+<!-- Your Page Content Goes Here-->
+<div class="page-content header-clear-medium">
+    <div class="card card-style">
+        <div class="content">
+            <h1 class="pb-2">Add Balance</h1>
+
+            <!-- 显示登录的用户 -->
+            <div class="form-custom form-label mb-3 form-icon">
+                <i class="bi bi-person-circle color-blue-dark font-14"></i>
+                <input type="text" class="form-control rounded-xs" id="c1" value="{{ user_name }}" readonly>
+                <label for="c1" class="form-label-always-active color-blue-dark">logged on user</label>
+            </div>
+
+            <!-- 显示账户余额 -->
+            <div class="form-custom form-label mb-3 form-icon">
+                <i class="bi bi-wallet color-blue-dark font-14"></i>
+                <input type="text" class="form-control rounded-xs" id="c1" value="{{ account_balance }}" readonly>
+                <label for="c1" class="form-label-always-active color-blue-dark">Account Balance</label>
+            </div>
+
+            <div class="divider mt-4"></div>
+
+            <!-- 支付表单 -->
+            <form method="POST" class="demo-animation needs-validation m-0" novalidate>
+                {% csrf_token %}
+
+                <!-- 卡号 -->
+                <div class="form-custom form-label mb-3 form-icon">
+                    <i class="bi bi-credit-card color-blue-dark font-14"></i>
+                    <input type="text" class="form-control rounded-xs" id="cardNumber" name="card_number"
+                           placeholder="Enter your card number" value="{{ form.card_number.value }}" required>
+                    <label for="cardNumber" class="form-label-always-active color-blue-dark">Card Number</label>
+                    {% if form.card_number.errors %}
+                        <div class="text-danger">{{ form.card_number.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- 过期日期 -->
+                <div class="form-custom form-label mb-3 form-icon">
+                    <i class="bi bi-calendar color-blue-dark font-14"></i>
+                    <input type="text" class="form-control rounded-xs" id="expirationDate" name="expiration_date"
+                           placeholder="MM/YYYY" value="{{ form.expiration_date.value }}" required>
+                    <label for="expirationDate" class="form-label-always-active color-blue-dark">Expiration Date
+                        (MM/YYYY)</label>
+                    {% if form.expiration_date.errors %}
+                        <div class="text-danger">{{ form.expiration_date.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- 安全码 CVV -->
+                <div class="form-custom form-label mb-3 form-icon">
+                    <i class="bi bi-lock color-blue-dark font-14"></i>
+                    <input type="text" class="form-control rounded-xs" id="securityCode" name="security_code"
+                           maxlength="3" placeholder="CVV" value="{{ form.security_code.value }}" required>
+                    <label for="securityCode" class="form-label-always-active color-blue-dark">CVV Code</label>
+                    {% if form.security_code.errors %}
+                        <div class="text-danger">{{ form.security_code.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- 金额 -->
+                <div class="form-custom form-label mb-3 form-icon">
+                    <i class="bi bi-currency-dollar color-blue-dark font-14"></i>
+                    <input type="number" class="form-control rounded-xs" id="amount" name="amount"
+                           value="{{ form.amount.value }}"
+                           placeholder="Enter amount" min="0.01" step="0.01" required>
+                    <label for="amount" class="form-label-always-active color-blue-dark">Amount</label>
+                    {% if form.amount.errors %}
+                        <div class="text-danger">{{ form.amount.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- 提交按钮 -->
+                <button class="btn btn-full bg-blue-dark rounded-xs text-uppercase font-700 w-100 btn-s mt-4"
+                        type="submit">
+                    Make Payment
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- End of Page Content-->
+
+
+{% block scripts %}
+    <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
+
+
+{% endblock %}
+</body>
+</html>

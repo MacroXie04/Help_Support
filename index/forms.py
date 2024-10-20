@@ -3,39 +3,28 @@ from django.contrib.auth.models import User
 from index.models import HelpContent, SupportContent
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-
-# make sure the time limit is in the future
-def validate_future_time(value):
-    if value <= timezone.now():
-        raise ValidationError("The time limit must be in the future.")
-
-class HelpContentForm(forms.ModelForm):
-    content = forms.CharField(widget=forms.Textarea, required=True, label="content")
-    time_limit = forms.DateTimeField(
-        required=True,
-        label="Time Limit",
-        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-        validators=[validate_future_time]
-    )
-    max_accept_user = forms.IntegerField(min_value=1, required=True, label="Maximum number of accepted users", initial=1)
-    total_money = forms.FloatField(min_value=0.0, required=True, label="Total money")
-
-    class Meta:
-        model = HelpContent
-        fields = ['content', 'time_limit', 'max_accept_user', 'total_money']
+from datetime import datetime
 
 
-class SupportContentForm(forms.ModelForm):
-    content = forms.CharField(widget=forms.Textarea, required=True, label="content")
-    time_limit = forms.DateTimeField(
-        required=True,
-        label="Time Limit",
-        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-        validators=[validate_future_time]
-    )
-    max_accept_user = forms.IntegerField(min_value=1, required=True, label="Maximum number of accepted users", initial=1)
-    total_money = forms.FloatField(min_value=0.0, required=True, label="Total money")
+def clean_accept_time_limit(self):
+    accept_time_limit = self.cleaned_data.get('accept_time_limit')
+    if accept_time_limit:
+        now = timezone.now()
+        if accept_time_limit < now:
+            raise forms.ValidationError("Accept time limit cannot be in the past.")
+    return accept_time_limit
 
-    class Meta:
-        model = SupportContent
-        fields = ['content', 'time_limit', 'max_accept_user', 'total_money']
+
+class ContentForm(forms.Form):
+    COMMENT_TYPE_CHOICES = [
+        ('Help', 'Help'),
+        ('Support', 'Support')
+    ]
+    comment_type = forms.ChoiceField(choices=COMMENT_TYPE_CHOICES, label="Select the comment type")
+    max_accept_user = forms.IntegerField(min_value=1, label="Max number of accept user", initial=1)
+    total_money = forms.FloatField(min_value=0.0, label="Aggregate amount", required=True)
+    accept_time_limit = forms.DateTimeField(label="Accept Limit Time", required=False,
+                                            widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}))
+    content = forms.CharField(widget=forms.Textarea, label="Content", required=True)
+
+

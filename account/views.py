@@ -11,11 +11,6 @@ from .forms import PaymentForm
 from decimal import Decimal
 
 
-def account_disabled(request):
-    if request.user.userprofile.is_active:
-        return redirect('index')
-    else:
-        return render(request, 'account_page/account_disabled.html')
 
 @login_required(login_url='/account/login')
 def account_page(request):
@@ -70,45 +65,5 @@ def add_balance(request):
         'form': form,
     }
 
-    return render(request, template_name='account_page/add_balance.html', context=context)
+    return render(request, template_name='account_page/templates/balance_page/add_balance.html', context=context)
 
-
-@login_required(login_url='/account/login/')
-def web_logout(request):
-    logout(request)
-    return redirect('login')
-
-def web_login(request):
-    if request.method == 'POST':
-        form = UserLoginForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('index')
-            else:
-                form.add_error(None, "Invalid username or password")
-    else:
-        form = UserLoginForm()
-
-    return render(request, 'login.html', {'form': form})
-
-
-# User Registration View
-def web_register(request):
-    if request.method == 'POST':
-        form = UserRegisterForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Your account has been created! You can now log in.')
-            return redirect('login')
-        else:
-            # 输出表单的错误信息到终端进行调试
-            print(form.errors)
-            messages.error(request, 'Please correct the errors below.')
-    else:
-        form = UserRegisterForm()
-
-    return render(request, 'register.html', {'form': form})

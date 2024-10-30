@@ -28,3 +28,8 @@ class ContentForm(forms.Form):
     content = forms.CharField(widget=forms.Textarea, label="Content", required=True)
 
 
+class SuperUserDeleteForm(forms.Form):
+    confirm_delete = forms.BooleanField(label="Confirm to delete the help content", required=True)
+
+class AcceptHelpForm(forms.Form):
+    confirm_request = forms.BooleanField(label="Confirm to request to accept the help content", required=True)

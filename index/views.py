@@ -1,15 +1,18 @@
 from django.contrib.auth import login
 from django.shortcuts import render
 from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404
 from django.contrib import messages
+from django.template.context_processors import request
 from .forms import ContentForm
 from django.contrib.auth.decorators import login_required
 from .models import HelpContent
-from .models import SupportContent
 from account.models import UserProfile, AccountBalance
 from django.utils import timezone
 
 
+
+@login_required(login_url='/account/login/')
 def index(request):
     if request.user.userprofile.is_active == False:
         return redirect('account_disabled')
@@ -22,11 +25,14 @@ def index_help(request):
     if request.user.userprofile.is_active == False:
         return redirect('account_disabled')
 
-    help_contents = HelpContent.objects.filter(is_show=True)
+    help_contents = HelpContent.objects.filter(is_show=True).values('id', 'accept_time_limit', 'content',
+                                                                    'push_user__first_name', 'push_user__last_name')
 
     context = {
         'help_contents': help_contents
     }
+
+    print(help_contents)
 
     return render(request, 'index/index_help.html', context)
 

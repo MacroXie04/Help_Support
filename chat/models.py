@@ -2,7 +2,6 @@ from django.db import models
 from django.db.models import Model
 from django.contrib.auth.models import User
 from index.models import HelpContent
-from index.models import SupportContent
 from django.utils import timezone
 
 
@@ -27,21 +26,6 @@ class HelpChat(models.Model):
 
 
 class HelpMessage(models.Model):
-    chat = models.OneToOneField(HelpContent, on_delete=models.CASCADE)
-    message = models.TextField()
-    message_time = models.DateTimeField(default=timezone.now)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.message
-
-
-class SupportChat(models.Model):
-    # unique foreign key link to SupportContent
-    chat = models.OneToOneField(SupportContent, on_delete=models.CASCADE)
-
-
-class SupportMessage(models.Model):
     chat = models.OneToOneField(HelpContent, on_delete=models.CASCADE)
     message = models.TextField()
     message_time = models.DateTimeField(default=timezone.now)

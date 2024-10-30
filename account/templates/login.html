@@ -14,79 +14,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&amp;family=Roboto:wght@400;500;700&amp;display=swap"
           rel="stylesheet">
     <meta id="theme-check" name="theme-color" content="#FFFFFF">
-    <title>{% block title %}Help and Support{% endblock %}</title>
-    {% block style %}
-    {% endblock %}
-
+    <title>Help and Support - login</title>
 </head>
 
 <body class="theme-light">
 
 <!-- Header -->
 <div class="header-bar header-fixed header-app header-bar-detached">
-    <a href="{% url 'index' %}" class="header-title color-theme" style="padding-left: 20px">Help and Support</a>
+    <a href="/" class="header-title color-theme" style="padding-left: 20px">Help and Support</a>
 </div>
 
 <!-- Your Page Content Goes Here-->
 <div class="page-content mb-0 pb-0">
-    <div class="card card-style mb-0 bg-transparent shadow-0 bg-3 mx-0 rounded-0" data-card-height="cover"
-         style="height: 891px;">
+    <div class="card card-style mb-0 bg-transparent shadow-0 bg-3 mx-0 rounded-0">
         <div class="card-center">
             <div class="card card-style">
                 <div class="content">
                     <h1 class="text-center font-800 font-30 mb-2">Sign In</h1>
                     <p class="text-center font-13 mt-n2 mb-3">Enter your account details</p>
-                    <form method="POST" action="{% url 'login' %}" novalidate>
-                        {% csrf_token %}
-                        <!-- Display non-field errors -->
-                        {% if form.non_field_errors %}
-                            <div class="alert bg-fade-red color-red-dark alert-dismissible rounded-s fade show" role="alert">
-                                {% for error in form.non_field_errors %}
-                                    <p>{{ error }}</p>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                        
-                        <!-- Username Field -->
-                        <div class="form-custom form-label form-icon mb-3">
-                            <i class="bi bi-person-circle font-14"></i>
-                            <input type="text"
-                                   class="form-control rounded-xs {% if form.username.errors %}is-invalid{% endif %}"
-                                   id="username" name="username" placeholder="Username" required>
-                            <label for="username" class="color-theme">Username</label>
-                            <div class="valid-feedback"></div>
-                            <div class="invalid-feedback">
-                                {% for error in form.username.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                        </div>
 
-                        <!-- Password Field -->
-                        <div class="form-custom form-label form-icon mb-3">
-                            <i class="bi bi-asterisk font-12"></i>
-                            <input type="password"
-                                   class="form-control rounded-xs {% if form.password.errors %}is-invalid{% endif %}"
-                                   id="password" name="password" placeholder="Password" required>
-                            <label for="password" class="color-theme">Password</label>
-                            <div class="valid-feedback"></div>
-                            <div class="invalid-feedback">
-                                {% for error in form.password.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                        </div>
+                    <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
 
-                        <!-- Submit Button -->
-                        <button type="submit"
-                                class="btn btn-full bg-blue-dark rounded-xs text-uppercase font-700 w-100 btn-s mt-4">
-                            Sign In
-                        </button>
-                    </form>
+                    <div id="loginFormContainer"></div>
+
                     <div class="d-flex">
                         <div>
-                            <a href="#" class="color-theme opacity-30 font-12">Recover Account (Under
-                                Development)</a>
+                            <a href="#" class="color-theme opacity-30 font-12">Recover Account (Under Development)</a>
                         </div>
                         <div class="ms-auto">
                             <a href="{% url 'register' %}" class="color-theme opacity-30 font-12">Create Account</a>
@@ -100,10 +53,10 @@
 
 <!-- End of Page Content-->
 
-
-
 {% block scripts %}
     <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
+    <script src="{% static 'scripts/api_login.js' %}"></script>
+    <script src="{% static 'scripts/content_center.js' %}"></script>
 {% endblock %}
 </body>
 </html>

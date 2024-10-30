@@ -14,15 +14,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&amp;family=Roboto:wght@400;500;700&amp;display=swap"
           rel="stylesheet">
     <meta id="theme-check" name="theme-color" content="#FFFFFF">
-    <title>{% block title %}Help and Support{% endblock %}</title>
-    {% block style %}
-    {% endblock %}
+    <title>Account Disabled - Team Help and Support</title>
 
 </head>
 
 <body class="theme-light">
-
-
 <!-- Header -->
 <div class="header-bar header-fixed header-app header-bar-detached">
     <a href="{% url 'index' %}" class="header-title color-theme" style="padding-left: 20px">Help and Support</a>
@@ -31,28 +27,40 @@
 
 <!-- Your Page Content Goes Here-->
 <div class="page-content header-clear-medium">
-    {% block content %}{% endblock %}
     <div class="card card-style">
-        <div class="content">
-            <h4>Account Disabled</h4>
-            <p></p>
-            <div class="form-custom form-label mb-3 form-icon">
-                <i class="bi bi-person-circle color-blue-dark font-14"></i>
-                <input type="text" class="form-control rounded-xs" id="c1" value="Hongzhe" readonly>
-                <label for="c1" class="form-label-always-active color-blue-dark">Disabled User</label>
+        <div class="content mb-0">
+            <div class="form-custom form-label form-icon mb-3">
+                <i class="bi bi-person-badge"></i>
+                <input type="text" id="user-name" class="form-control rounded-xs" value="" readonly>
+                <label for="user-name" class="color-theme form-label-always-active font-10 opacity-50">Username</label>
             </div>
+            <div class="form-custom form-label form-icon mb-3">
+                <i class="bi bi-envelope"></i>
+                <input type="text" id="user-email" class="form-control rounded-xs" value="" readonly>
+                <label for="user-email" class="color-theme form-label-always-active font-10 opacity-50">Email</label>
+            </div>
+            <div class="form-custom form-label form-icon mb-3">
+                <i class="bi bi-wallet"></i>
+                <input type="text" id="user-balance" class="form-control rounded-xs" value="" readonly>
+                <label for="user-balance" class="color-theme form-label-always-active font-10 opacity-50">Balance</label>
+            </div>
+
+            <div class="divider mt-4"></div>
+
             <p>
-                自己用这个干啥B事自己不知道吗？！！！
+                Your account has been disabled. Please contact the administrator for more information.
             </p>
         </div>
     </div>
 
-</div>
-<!-- End of Page Content-->
 
+</div>
+
+<!-- End of Page Content-->
 
 {% block scripts %}
     <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
+    <script src="{% static 'scripts/api_account_disabled.js' %}"></script>
 {% endblock %}
 </body>
 </html>

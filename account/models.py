@@ -13,10 +13,6 @@ class UserProfile(models.Model):
     is_active = models.BooleanField(default=True)
     is_deleted = models.BooleanField(default=False)
 
-    # base info
-    first_name = models.CharField(max_length=100, blank=True)
-    last_name = models.CharField(max_length=100, blank=True)
-
     # contact info
     phone = models.CharField(max_length=20)
 

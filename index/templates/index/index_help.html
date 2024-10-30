@@ -30,26 +30,24 @@
 
 <!-- Footer Bar-->
 <div id="footer-bar" class="footer-bar footer-bar-detached">
-    <a href="{% url 'index_help' %}" class="active-nav"><i class="bi bi-arrow-bar-up"></i><span>Help</span></a>
-    <a href="{% url 'index_support' %}"><i class="bi bi-arrow-bar-down"></i><span>Support</span></a>
-    <a href="{% url 'add_content' %}"><i class="bi bi-patch-plus"></i><span>Add</span></a>
+    <a href="#" class="active-nav"><i class="bi bi-arrow-bar-up"></i><span>Help</span></a>
+    <a href="#"><i class="bi bi-arrow-bar-down"></i><span>Support</span></a>
+    <a href="#"><i class="bi bi-patch-plus"></i><span>Add</span></a>
     <a href="#"><i class="bi bi-archive"></i><span>My Content</span></a>
-    <a href="{% url 'account_page' %}"><i class="bi bi-file-person"></i><span>Account</span></a>
+    <a href="#"><i class="bi bi-file-person"></i><span>Account</span></a>
 </div>
 
 
 <!-- Your Page Content Goes Here-->
 <div class="page-content header-clear-medium">
-    {% block content %}{% endblock %}
-
+    duhweiiduiwhdiuwheiudhiuwhiudhwe
 </div>
 <!-- End of Page Content-->
 
 
-
-
+<script src="{% static 'scripts/bootstrap.min.js' %}"></script>
 {% block scripts %}
-    <script src="{% static 'scripts/bootstrap.min.js' %}"></script>
+    <script src="{% static 'scripts/timer.js' %}"></script>
 {% endblock %}
 </body>
 </html>

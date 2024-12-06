@@ -27,6 +27,26 @@ class UserProfile(models.Model):
         return f"{self.user.username}"
 
 
+class AddressPayment(models.Model):
+    # link to user model
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    # address info
+    add_line_1 = models.CharField(max_length=100, blank=True)
+    add_line_2 = models.CharField(max_length=100, blank=True)
+
+    country = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=100, blank=True)
+    zip = models.CharField(max_length=100, blank=True)
+
+    # Card info
+    card_name = models.CharField(max_length=100, blank=True)
+    card_number = models.CharField(max_length=100, blank=True)
+    card_exp = models.CharField(max_length=100, blank=True)
+    card_cv = models.CharField(max_length=3, blank=True)
+
+
 
 class AccountBalance(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

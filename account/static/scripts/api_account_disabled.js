@@ -24,7 +24,7 @@ function fetchUserInfo(csrfToken) {
     fetch('/api/user_info_short/', {
         method: 'POST',
         headers: {
-            'X-CSRFToken': csrfToken, // 使用从服务器获取的CSRF token
+            'X-CSRFToken': csrfToken,
             'Content-Type': 'application/json'
         },
         credentials: 'include'

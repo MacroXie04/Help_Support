@@ -1,58 +1,40 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class Content(models.Model):
+    # link to user model
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-class HelpContent(models.Model):
-    # content and enhanced content in HTML format
-    content = models.TextField()
-    enhanced_content = models.TextField(blank=True)
+    # state
+    STATE = (
+        ('W', 'Waiting'),
+        ('C', 'Completed'),
+    )
+    state = models.CharField(max_length=1, choices=STATE)
 
-    # time info
-    creat_time = models.DateTimeField(auto_now_add=True)
-    time_limit = models.DateTimeField(blank=True)
+    # content type
+    CONTENT_TYPE = (
+        ('H', 'Help'),
+        ('S', 'Support'),
+    )
+    content_type = models.CharField(max_length=1, choices=CONTENT_TYPE)
 
-    # state info
+    # report info
+    is_report = models.BooleanField(default=False)
     is_show = models.BooleanField(default=True)
-    is_completed = models.BooleanField(default=False)
-    completed_data = models.DateTimeField(blank=True)
-    state = models.TextField(default='waiting for accept')
 
-    # money info
-    total_money = models.FloatField(default=0.0)
-    money_per_user = models.FloatField(default=0.0)
+    # content info
+    title = models.CharField(max_length=100)
+    body = models.TextField()
 
-    # foreign key link to push and accept users
-    max_accept_user = models.IntegerField(default=1)
-    push_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='helpcontent_push_users')
-    unverified_accept_user = models.ForeignKey(User, on_delete=models.CASCADE,
-                                               related_name='helpcontent_unverified_users')
-    verified_accept_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='helpcontent_verified_users')
+    # time range
+    accept_time_limit = models.DateTimeField()
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    def get_content_type_display(self):
+        return dict(self.CONTENT_TYPE)[self.content_type]
 
     def __str__(self):
-        return self.state
+        return f"{self.title} ({self.get_content_type_display()})"
 
-
-class SupportContent(models.Model):
-    # content and enhanced content in HTML format
-    content = models.TextField()
-    enhanced_content = models.TextField(blank=True)
-
-    # time info
-    creat_time = models.DateTimeField(auto_now_add=True)
-    time_limit = models.DateTimeField(blank=True)
-
-    # state info
-    is_show = models.BooleanField(default=True)
-    is_completed = models.BooleanField(default=False)
-    state = models.TextField(default='waiting for accept')
-
-    # foreign key link to push and accept users
-    max_accept_user = models.IntegerField(default=1)
-    push_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='supportcontent_push_users')
-    unverified_accept_user = models.ForeignKey(User, on_delete=models.CASCADE,
-                                               related_name='supportcontent_unverified_users')
-    verified_accept_user = models.ForeignKey(User, on_delete=models.CASCADE,
-                                             related_name='supportcontent_verified_users')
-
-    def __str__(self):
-        return self.state

@@ -169,7 +169,7 @@ class UserProfile(models.Model):
         ('GMT+13:00', 'Samoa'),
         ('GMT+13:00', 'Tokelau Is.'),
     )
-    time_zone = models.CharField(max_length=9, choices=TIME_ZONE)
+    time_zone = models.CharField(max_length=9, choices=TIME_ZONE, default='GMT-08:00')
 
     # user profile info
     age = models.IntegerField()
@@ -326,7 +326,7 @@ class Transaction(models.Model):
         ('D', 'Declined'),
         ('C', 'Completed'),
     )
-    transaction_type = models.CharField(max_length=1, choices=TRANSACTION_TYPE)
+    transaction_type = models.CharField(max_length=1, choices=TRANSACTION_TYPE, default='P')
     transaction_description = models.TextField()
 
     def __str__(self):

@@ -1,0 +1,74 @@
+{% extends 'layout/layout_write.html' %}
+{% load static %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+    <div class="container mt-5 d-flex justify-content-center" style="max-width: 800px;">
+        <div class="card shadow-sm w-100">
+            <div class="card-body p-4">
+
+                <h3 class="card-title mb-2">{{ post.title }}</h3>
+                <h6 class="card-subtitle text-muted mb-3">
+                    {{ post.get_category_display }} • by {{ post.author.username }}
+                </h6>
+
+                <p class="card-text" style="white-space: pre-wrap;">{{ post.description }}</p>
+
+                <hr>
+
+                <div class="row text-center">
+                    <div class="col">
+                        <strong>Accepted</strong><br>
+                        {{ post.accepted_applicants_count }} / {{ post.max_accepted_applicants }}
+                    </div>
+                    <div class="col">
+                        <strong>Deadline</strong><br>
+                        <span id="countdown" data-deadline="{{ post.deadline|date:'c' }}"></span>
+                    </div>
+                    <div class="col">
+                        <strong>Created</strong><br>
+                        {{ post.created_at|date:"Y-m-d H:i" }}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        (function () {
+            "use strict";
+            const el = document.getElementById("countdown");
+            if (!el) return;
+
+            const deadline = Date.parse(el.dataset.deadline);
+
+            function pad(n) {
+                return n.toString().padStart(2, "0");
+            }
+
+            function tick() {
+                const diff = deadline - Date.now();
+                if (diff <= 0) {
+                    el.textContent = "Expired";
+                    return; // stop updating
+                }
+                const s = Math.floor(diff / 1000) % 60;
+                const m = Math.floor(diff / (1000 * 60)) % 60;
+                const h = Math.floor(diff / (1000 * 60 * 60)) % 24;
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+                let txt = "";
+                if (d) txt += d + "d ";
+                txt += pad(h) + ":" + pad(m) + ":" + pad(s);
+                el.textContent = txt;
+            }
+
+            tick();
+            setInterval(tick, 1000);
+        })();
+    </script>
+{% endblock %}

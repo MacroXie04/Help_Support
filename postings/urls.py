@@ -9,7 +9,9 @@ from postings.views import (
 app_name = 'postings'
 
 urlpatterns = [
-    path("", index.index_page, name='index'),
+    path("", index.post_list, name='index'),
 
     path('create/', post.create_post, name='create_post'),
+
+    path("post/<uuid:uuid>/", post.post_detail, name="post_detail"),
 ]

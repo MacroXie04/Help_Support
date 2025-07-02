@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -23,6 +24,13 @@ class Post(models.Model):
     # --------------------------------------------------------------------- #
     # Core fields
     # --------------------------------------------------------------------- #
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        db_index=True,
+        help_text="Public-facing identifier for lookup"
+    )
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='posts'
     )
@@ -40,13 +48,10 @@ class Post(models.Model):
         default=PostStatus.OPEN,
     )
 
-    # Maximum number of applicants that can be **approved** for this post.
-    # Set to 1 for a single-person task; >1 to allow multiple helpers.
+    # Maximum number of applicants that can be approved for this post.
     max_accepted_applicants = models.PositiveIntegerField(default=1)
 
-    # Optional deadline – business logic elsewhere can set status to EXPIRED
     deadline = models.DateTimeField(null=True, blank=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -54,17 +59,17 @@ class Post(models.Model):
     # Helper methods
     # --------------------------------------------------------------------- #
     def accepted_applicants_count(self) -> int:
-        """Return the number of APPROVED applications for this post."""
+        """Return number of APPROVED applications for this post."""
         return self.applications.filter(
             status=PostApplication.ApplicationStatus.APPROVED
         ).count()
 
     def is_full(self) -> bool:
-        """Return True if the post has reached `max_accepted_applicants`."""
+        """True if the post has reached its applicant limit."""
         return self.accepted_applicants_count() >= self.max_accepted_applicants
 
     def __str__(self) -> str:  # noqa: D401
-        return self.title
+        return f'{self.title}, {self.get_category_display()} Post by {self.author.username}'
 
 
 # --------------------------------------------------------------------------- #
@@ -102,13 +107,11 @@ class PostApplication(models.Model):
     # --------------------------------------------------------------------- #
     def clean(self):
         """
-        Ensure an application cannot be approved if the related Post
-        is already full.
+        Prevent approving an application if the related Post is already full.
         """
         if (
             self.status == self.ApplicationStatus.APPROVED
             and self.post.is_full()
-            # `self` may already be in the accepted set, so exclude itself
             and not (
                 self.pk
                 and self.post.applications.filter(
@@ -123,30 +126,28 @@ class PostApplication(models.Model):
             )
 
     def save(self, *args, **kwargs):
-        """Override save to auto-lock the Post when it becomes full."""
-        # Determine if we transitioned into APPROVED status
-        is_new_object = self.pk is None
+        """Override save to auto-lock Post when it becomes full."""
+        is_new = self.pk is None
         old_status = None
-        if not is_new_object:
+        if not is_new:
             old_status = (
                 PostApplication.objects.filter(pk=self.pk)
                 .values_list('status', flat=True)
                 .first()
             )
 
-        super().save(*args, **kwargs)  # perform actual save (+ clean())
+        super().save(*args, **kwargs)  # performs clean()
 
-        # If this application was newly approved, check whether the post filled up
-        if (
-            (is_new_object and self.status == self.ApplicationStatus.APPROVED)
+        transitioned_to_approved = (
+            (is_new and self.status == self.ApplicationStatus.APPROVED)
             or (
                 old_status != self.ApplicationStatus.APPROVED
                 and self.status == self.ApplicationStatus.APPROVED
             )
-        ):
-            if self.post.is_full():
-                self.post.status = Post.PostStatus.LOCKED
-                self.post.save(update_fields=['status'])
+        )
+        if transitioned_to_approved and self.post.is_full():
+            self.post.status = Post.PostStatus.LOCKED
+            self.post.save(update_fields=['status'])
 
     # --------------------------------------------------------------------- #
     # Meta & display

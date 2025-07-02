@@ -159,9 +159,10 @@ class UserProfile(models.Model):
 
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    gender = models.CharField(max_length=20, choices=GENDER_CHOICES)
+    gender = models.CharField(max_length=26, choices=GENDER_CHOICES)
     email = models.EmailField(unique=True)
-    country = models.CharField(max_length=2, choices=COUNTRY_CHOICES)
+    country = models.CharField(max_length=5, choices=COUNTRY_CHOICES)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
 
     # Base64-encoded PNG image (128x128)
     profile_image_base64 = models.TextField(help_text="Base64 encoded PNG image (128x128)")

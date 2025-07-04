@@ -1,7 +1,10 @@
 from django import forms
 from django.utils import timezone
 
-from postings.models import Post
+from postings.models import (
+    Post,
+    PostApplication,
+)
 
 
 class PostForm(forms.ModelForm):
@@ -47,3 +50,19 @@ class PostForm(forms.ModelForm):
         if num is not None and num < 1:
             raise forms.ValidationError("At least one applicant must be allowed.")
         return num
+
+
+class ApplicationForm(forms.ModelForm):
+    class Meta:
+        model = PostApplication
+        fields = ['message']
+        widgets = {
+            'message': forms.Textarea(attrs={
+                'rows': 4,
+                'class': 'form-control',
+                'placeholder': 'Describe your skills or how you can help',
+            }),
+        }
+        help_texts = {
+            'message': 'This message will be sent to the post author.',
+        }

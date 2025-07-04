@@ -22,6 +22,8 @@ urlpatterns = [
     path('', include('postings.urls')),
 
     path('webauthn/', include('users.urls')),
+
+    path('chat/', include('chat.urls')),
 ]
 
 if WEB_ADMIN:

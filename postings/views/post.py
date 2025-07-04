@@ -2,7 +2,6 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from postings.models import Post, PostApplication
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from django.core.exceptions import PermissionDenied
@@ -27,23 +26,24 @@ def create_post(request):
     return render(request, "posts/index.html", {"page_obj": page_obj})
 
 
-
-
-
 @login_required(login_url="/webauthn/login")
 def post_detail(request, uuid):
     post = get_object_or_404(Post, uuid=uuid)
     is_author = (request.user == post.author)
-    user_application = PostApplication.objects.filter(post=post,
-                                                      applicant=request.user).first() if not is_author else None
 
-    # Author sees all applications; others see none
-    applications = post.applications.all().order_by('-created_at') if is_author else None
+    user_application = None
+    pending_applications = None
+    approved_applications = None
+
+    if is_author:
+        pending_applications = post.applications.filter(status=PostApplication.ApplicationStatus.PENDING).order_by('-created_at')
+        approved_applications = post.applications.filter(status=PostApplication.ApplicationStatus.APPROVED).order_by('created_at')
+    else:
+        user_application = PostApplication.objects.filter(post=post, applicant=request.user).first()
 
     if request.method == 'POST':
         action = request.POST.get('action')
 
-        # Action: A user applies to the post
         if action == 'apply' and not is_author and post.status == Post.PostStatus.OPEN:
             form = ApplicationForm(request.POST)
             if form.is_valid() and not user_application:
@@ -51,43 +51,57 @@ def post_detail(request, uuid):
                 application.post = post
                 application.applicant = request.user
                 application.save()
-                messages.success(request, '你的申请已成功提交！')
+                messages.success(request, 'Your application has been submitted successfully.')
             else:
-                messages.warning(request, '你已经申请过这个任务了。')
-            return redirect('post_detail', uuid=post.uuid)
+                messages.warning(request, 'You have already applied to this post.')
+            return redirect('postings:post_detail', uuid=post.uuid)
 
-        # Action: The author approves an application
         elif action == 'approve_application' and is_author:
             application_id = request.POST.get('application_id')
             application_to_approve = get_object_or_404(PostApplication, id=application_id, post=post)
             if not post.is_full():
                 application_to_approve.status = PostApplication.ApplicationStatus.APPROVED
                 application_to_approve.save()
-                messages.success(request, f'已批准 {application_to_approve.applicant.username} 的申请。')
+                messages.success(request, f'{application_to_approve.applicant.username} has been approved.')
             else:
-                messages.error(request, '任务人数已满，无法批准更多申请。')
-            return redirect('post_detail', uuid=post.uuid)
+                messages.error(request, 'The task is full. No more applications can be approved.')
+            return redirect('postings:post_detail', uuid=post.uuid)
 
-        # Action: A user withdraws their own application
         elif action == 'withdraw_application' and user_application:
             if user_application.status == PostApplication.ApplicationStatus.PENDING:
                 user_application.delete()
-                messages.success(request, '你的申请已成功撤回。')
+                messages.success(request, 'Your application has been withdrawn.')
             else:
-                messages.warning(request, '你的申请已被处理，无法撤回。')
-            return redirect('post_detail', uuid=post.uuid)
+                messages.warning(request, 'Your application has already been processed and cannot be withdrawn.')
+            return redirect('postings:post_detail', uuid=post.uuid)
 
-    # For GET requests, prepare the context
+        elif action == 'toggle_lock' and is_author:
+            if post.status == Post.PostStatus.OPEN:
+                post.status = Post.PostStatus.LOCKED
+                post.save(update_fields=['status'])
+                messages.success(request, 'The post has been locked. No more applications will be accepted.')
+            elif post.status == Post.PostStatus.LOCKED:
+                if post.is_full():
+                    messages.warning(request, 'Cannot reopen the post because the task is already full.')
+                else:
+                    post.status = Post.PostStatus.OPEN
+                    post.save(update_fields=['status'])
+                    messages.success(request, 'The post has been reopened for applications.')
+            else:
+                messages.error(request, f'The post status "{post.get_status_display()}" cannot be changed.')
+            return redirect('postings:post_detail', uuid=post.uuid)
+
     application_form = ApplicationForm()
     context = {
         'post': post,
         'is_author': is_author,
         'user_application': user_application,
-        'applications': applications,
+        'pending_applications': pending_applications,
+        'approved_applications': approved_applications,
         'application_form': application_form,
         'is_open_for_application': (
-                post.status == Post.PostStatus.OPEN and
-                (post.deadline is None or post.deadline > timezone.now())
+            post.status == Post.PostStatus.OPEN and
+            (post.deadline is None or post.deadline > timezone.now())
         )
     }
     return render(request, "posts/post_detail.html", context)
@@ -97,26 +111,21 @@ def post_detail(request, uuid):
 def post_update(request, uuid):
     post = get_object_or_404(Post, uuid=uuid)
     if post.author != request.user:
-        raise PermissionDenied("你没有权限编辑这个帖子。")
-    # You should build a proper form and template for editing
-    # For now, this is a placeholder
-    messages.info(request, "编辑功能尚未实现。")
-    return redirect('post_detail', uuid=post.uuid)
+        raise PermissionDenied("You do not have permission to edit this post.")
+    messages.info(request, "Edit functionality is not yet implemented.")
+    return redirect('postings:post_detail', uuid=post.uuid)
 
 
 @login_required(login_url="/webauthn/login")
 def post_delete(request, uuid):
     post = get_object_or_404(Post, uuid=uuid)
     if post.author != request.user:
-        raise PermissionDenied("你没有权限删除这个帖子。")
+        raise PermissionDenied("You do not have permission to delete this post.")
 
     if request.method == 'POST':
         post_title = post.title
         post.delete()
-        messages.success(request, f"帖子 '{post_title}' 已成功删除。")
-        # Redirect to a list page or homepage, assuming 'home' is its name
-        return redirect('home')
+        messages.success(request, f"The post '{post_title}' has been deleted successfully.")
+        return redirect('postings:index')
 
-        # You would normally render a confirmation page on GET
-    # but the form in the template submits directly via POST
-    return redirect('post_detail', uuid=post.uuid)
+    return redirect('postings:post_detail', uuid=post.uuid)

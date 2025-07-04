@@ -26,7 +26,19 @@
                     </h6>
                 </div>
                 {% if is_author %}
-                <div>
+                <div class="d-flex align-items-center">
+                    {% if post.status == 'O' or post.status == 'L' %}
+                    <form action="{% url 'postings:post_detail' post.uuid %}" method="post" class="d-inline me-2">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="toggle_lock">
+                        {% if post.status == 'O' %}
+                            <button type="submit" class="btn btn-sm btn-outline-warning">手动锁定</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-sm btn-outline-success">重新开放</button>
+                        {% endif %}
+                    </form>
+                    {% endif %}
+
                     <a href="{% url 'postings:post_update' post.uuid %}" class="btn btn-sm btn-outline-secondary me-2">编辑</a>
                     <form action="{% url 'postings:post_delete' post.uuid %}" method="post" class="d-inline" onsubmit="return confirm('确定要删除这个任务吗？此操作无法撤销。');">
                         {% csrf_token %}
@@ -73,16 +85,33 @@
             <hr>
 
             {% if is_author %}
-                <h4 class="mt-4">申请列表 ({{ applications.count }})</h4>
-                {% for app in applications %}
-                    <div class="card my-3">
-                        <div class="card-body d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="card-title">{{ app.applicant.username }}</h6>
-                                <p class="card-text text-muted mb-0">"{{ app.message|default:'申请人未留言'|truncatechars:80 }}"</p>
+
+                <div class="mt-4">
+                    <h4 class="mb-3">已接受的成员 ({{ approved_applications.count }})</h4>
+                    {% for app in approved_applications %}
+                        <div class="card my-2 bg-light border-success">
+                            <div class="card-body py-2 px-3 d-flex align-items-center">
+                                <span class="fw-bold">{{ app.applicant.username }}</span>
+                                <span class="badge bg-success ms-auto">已批准</span>
                             </div>
-                            <div>
-                                {% if app.status == 'P' %}
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">尚无已接受的成员。</p>
+                    {% endfor %}
+                </div>
+
+                <hr class="my-4">
+
+                <div class="mt-4">
+                    <h4 class="mb-3">待处理的申请 ({{ pending_applications.count }})</h4>
+                    {% for app in pending_applications %}
+                        <div class="card my-3">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title">{{ app.applicant.username }}</h6>
+                                    <p class="card-text text-muted mb-0">"{{ app.message|default:'申请人未留言'|truncatechars:80 }}"</p>
+                                </div>
+                                <div>
                                     {% if post.is_full %}
                                         <span class="text-muted">任务已满</span>
                                     {% else %}
@@ -93,17 +122,13 @@
                                             <button type="submit" class="btn btn-sm btn-success">批准加入</button>
                                         </form>
                                     {% endif %}
-                                {% elif app.status == 'A' %}
-                                    <span class="badge bg-success">已批准</span>
-                                {% elif app.status == 'R' %}
-                                    <span class="badge bg-danger">已拒绝</span>
-                                {% endif %}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% empty %}
-                    <p class="text-muted">目前还没有人申请。</p>
-                {% endfor %}
+                    {% empty %}
+                        <p class="text-muted">没有待处理的申请。</p>
+                    {% endfor %}
+                </div>
 
             {% else %}
                 <div class="mt-4">
@@ -149,7 +174,6 @@
 {% endblock %}
 
 {% block script %}
-    {# This inherits any scripts from the parent template if they exist #}
     {{ block.super }}
     <script>
         (function () {
@@ -161,6 +185,7 @@
             };
 
             const deadline = Date.parse(el.dataset.deadline);
+            const intervalId = setInterval(tick, 1000);
 
             function pad(n) {
                 return n.toString().padStart(2, "0");
@@ -170,7 +195,7 @@
                 const diff = deadline - Date.now();
                 if (diff <= 0) {
                     el.textContent = "已过期";
-                    clearInterval(intervalId); // Stop the timer
+                    clearInterval(intervalId);
                     return;
                 }
                 const s = Math.floor(diff / 1000) % 60;
@@ -183,9 +208,7 @@
                 txt += pad(h) + ":" + pad(m) + ":" + pad(s);
                 el.textContent = txt;
             }
-
             tick();
-            const intervalId = setInterval(tick, 1000);
         })();
     </script>
 {% endblock %}

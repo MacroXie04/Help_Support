@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.core.exceptions import PermissionDenied
 from postings.forms.PostForm import ApplicationForm, PostForm
+import uuid
 
 
 @login_required(login_url="/webauthn/login")
@@ -25,84 +26,151 @@ def create_post(request):
         page_obj = paginator.page(paginator.num_pages)
     return render(request, "posts/index.html", {"page_obj": page_obj})
 
+# --------------------------------------------------------------------------- #
+# Helpers
+# --------------------------------------------------------------------------- #
+
+def _auto_expire(post: Post) -> None:
+    """If the deadline has passed, flip status → EXPIRED."""
+    if (
+        post.deadline
+        and post.deadline <= timezone.now()
+        and post.status in (Post.PostStatus.OPEN, Post.PostStatus.LOCKED)
+    ):
+        post.status = Post.PostStatus.EXPIRED
+        post.save(update_fields=["status"])
+
+
+# --------------------------------------------------------------------------- #
+# Views
+# --------------------------------------------------------------------------- #
 
 @login_required(login_url="/webauthn/login")
-def post_detail(request, uuid):
-    post = get_object_or_404(Post, uuid=uuid)
-    is_author = (request.user == post.author)
+def post_detail(request, uuid: uuid.UUID):
+    """Single‑post detail page with full role/ state matrix logic."""
 
+    post: Post = get_object_or_404(Post, uuid=uuid)
+    _auto_expire(post)  # deadline‑driven transition
+
+    is_author = request.user == post.author
+
+    # ------------------------------------------------------------------ #
+    # Role‑specific querysets
+    # ------------------------------------------------------------------ #
     user_application = None
-    pending_applications = None
-    approved_applications = None
+    approved_qs = pending_qs = None
 
     if is_author:
-        pending_applications = post.applications.filter(status=PostApplication.ApplicationStatus.PENDING).order_by('-created_at')
-        approved_applications = post.applications.filter(status=PostApplication.ApplicationStatus.APPROVED).order_by('created_at')
+        pending_qs = post.applications.filter(
+            status=PostApplication.ApplicationStatus.PENDING
+        ).order_by("-created_at")
+        approved_qs = post.applications.filter(
+            status=PostApplication.ApplicationStatus.APPROVED
+        ).order_by("created_at")
     else:
-        user_application = PostApplication.objects.filter(post=post, applicant=request.user).first()
+        user_application = PostApplication.objects.filter(
+            post=post, applicant=request.user
+        ).first()
 
-    if request.method == 'POST':
-        action = request.POST.get('action')
+    # ------------------------------------------------------------------ #
+    # Handle POST actions
+    # ------------------------------------------------------------------ #
+    if request.method == "POST":
+        action = request.POST.get("action")
 
-        if action == 'apply' and not is_author and post.status == Post.PostStatus.OPEN:
+        # ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+        # 1. Apply
+        # ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+        if action == "apply" and not is_author and post.status == Post.PostStatus.OPEN:
             form = ApplicationForm(request.POST)
             if form.is_valid() and not user_application:
-                application = form.save(commit=False)
-                application.post = post
-                application.applicant = request.user
-                application.save()
-                messages.success(request, 'Your application has been submitted successfully.')
+                app = form.save(commit=False)
+                app.post = post
+                app.applicant = request.user
+                app.save()
+                messages.success(request, "Your application has been submitted.")
             else:
-                messages.warning(request, 'You have already applied to this post.')
-            return redirect('postings:post_detail', uuid=post.uuid)
+                messages.warning(request, "You have already applied to this post.")
+            return redirect("postings:post_detail", uuid=post.uuid)
 
-        elif action == 'approve_application' and is_author:
-            application_id = request.POST.get('application_id')
-            application_to_approve = get_object_or_404(PostApplication, id=application_id, post=post)
-            if not post.is_full():
-                application_to_approve.status = PostApplication.ApplicationStatus.APPROVED
-                application_to_approve.save()
-                messages.success(request, f'{application_to_approve.applicant.username} has been approved.')
-            else:
-                messages.error(request, 'The task is full. No more applications can be approved.')
-            return redirect('postings:post_detail', uuid=post.uuid)
-
-        elif action == 'withdraw_application' and user_application:
+        # ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+        # 2. Withdraw (pending only)
+        # ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+        elif action == "withdraw_application" and user_application:
             if user_application.status == PostApplication.ApplicationStatus.PENDING:
                 user_application.delete()
-                messages.success(request, 'Your application has been withdrawn.')
+                messages.success(request, "Your application has been withdrawn.")
             else:
-                messages.warning(request, 'Your application has already been processed and cannot be withdrawn.')
-            return redirect('postings:post_detail', uuid=post.uuid)
+                messages.warning(request, "Processed applications cannot be withdrawn.")
+            return redirect("postings:post_detail", uuid=post.uuid)
 
-        elif action == 'toggle_lock' and is_author:
+        # ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+        # 3. Approve (author only)
+        # ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+        elif action == "approve_application" and is_author:
+            aid = request.POST.get("application_id")
+            target = get_object_or_404(PostApplication, id=aid, post=post)
+            if not post.is_full():
+                target.status = PostApplication.ApplicationStatus.APPROVED
+                target.save()
+                messages.success(request, f"{target.applicant.username} approved.")
+            else:
+                messages.error(request, "Task is full – cannot approve more applicants.")
+            return redirect("postings:post_detail", uuid=post.uuid)
+
+        # ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+        # 4. Lock / Re‑open (author only)
+        # ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+        elif action == "toggle_lock" and is_author:
             if post.status == Post.PostStatus.OPEN:
                 post.status = Post.PostStatus.LOCKED
-                post.save(update_fields=['status'])
-                messages.success(request, 'The post has been locked. No more applications will be accepted.')
+                post.save(update_fields=["status"])
+                messages.success(request, "Post locked – no further applications.")
             elif post.status == Post.PostStatus.LOCKED:
                 if post.is_full():
-                    messages.warning(request, 'Cannot reopen the post because the task is already full.')
+                    messages.warning(request, "Cannot reopen – task already full.")
                 else:
                     post.status = Post.PostStatus.OPEN
-                    post.save(update_fields=['status'])
-                    messages.success(request, 'The post has been reopened for applications.')
+                    post.save(update_fields=["status"])
+                    messages.success(request, "Post reopened for applications.")
             else:
-                messages.error(request, f'The post status "{post.get_status_display()}" cannot be changed.')
-            return redirect('postings:post_detail', uuid=post.uuid)
+                messages.error(request, "This status cannot be toggled.")
+            return redirect("postings:post_detail", uuid=post.uuid)
 
+        # ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+        # 5. Mark completed (author only)
+        # ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+        elif action == "mark_completed" and is_author and post.status != Post.PostStatus.COMPLETED:
+            post.status = Post.PostStatus.COMPLETED
+            post.save(update_fields=["status"])
+            messages.success(request, "Task marked as completed.")
+            return redirect("postings:post_detail", uuid=post.uuid)
+
+        # ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+        # 6. Re‑open EXPIRED (author only)
+        # ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+        elif action == "reopen_post" and is_author and post.status == Post.PostStatus.EXPIRED:
+            post.status = Post.PostStatus.OPEN
+            post.save(update_fields=["status"])
+            messages.success(request, "Post reopened – remember to extend the deadline!")
+            return redirect("postings:post_detail", uuid=post.uuid)
+
+    # ------------------------------------------------------------------ #
+    # Render
+    # ------------------------------------------------------------------ #
     application_form = ApplicationForm()
+
     context = {
-        'post': post,
-        'is_author': is_author,
-        'user_application': user_application,
-        'pending_applications': pending_applications,
-        'approved_applications': approved_applications,
-        'application_form': application_form,
-        'is_open_for_application': (
-            post.status == Post.PostStatus.OPEN and
-            (post.deadline is None or post.deadline > timezone.now())
-        )
+        "post": post,
+        "is_author": is_author,
+        "user_application": user_application,
+        "pending_applications": pending_qs,
+        "approved_applications": approved_qs,
+        "application_form": application_form,
+        "is_open_for_application": (
+            post.status == Post.PostStatus.OPEN
+            and (post.deadline is None or post.deadline > timezone.now())
+        ),
     }
     return render(request, "posts/post_detail.html", context)
 

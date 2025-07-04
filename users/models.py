@@ -1,86 +1,180 @@
-# users/models.py
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.translation import gettext_lazy as _
+
+COUNTRY_CHOICES = [
+    # Asia
+    ('cn', 'China'),
+    ('jp', 'Japan'),
+    ('kr', 'South Korea'),
+    ('in', 'India'),
+    ('id', 'Indonesia'),
+    ('my', 'Malaysia'),
+    ('ph', 'Philippines'),
+    ('th', 'Thailand'),
+    ('vn', 'Vietnam'),
+    ('sg', 'Singapore'),
+    ('tw', 'Taiwan'),
+    ('hk', 'Hong Kong'),
+    ('mo', 'Macau'),
+    ('ae', 'United Arab Emirates'),
+    ('sa', 'Saudi Arabia'),
+    ('il', 'Israel'),
+    ('tr', 'Turkey'),
+    ('pk', 'Pakistan'),
+    ('bd', 'Bangladesh'),
+    ('lk', 'Sri Lanka'),
+
+    # Europe
+    ('gb', 'United Kingdom'),
+    ('de', 'Germany'),
+    ('fr', 'France'),
+    ('es', 'Spain'),
+    ('it', 'Italy'),
+    ('ru', 'Russia'),
+    ('nl', 'Netherlands'),
+    ('be', 'Belgium'),
+    ('ch', 'Switzerland'),
+    ('se', 'Sweden'),
+    ('no', 'Norway'),
+    ('dk', 'Denmark'),
+    ('fi', 'Finland'),
+    ('at', 'Austria'),
+    ('pl', 'Poland'),
+    ('pt', 'Portugal'),
+    ('gr', 'Greece'),
+    ('hu', 'Hungary'),
+    ('cz', 'Czech Republic'),
+    ('ro', 'Romania'),
+
+    # North America
+    ('us', 'United States'),
+    ('ca', 'Canada'),
+    ('mx', 'Mexico'),
+    ('pr', 'Puerto Rico'),
+    ('gt', 'Guatemala'),
+    ('cu', 'Cuba'),
+
+    # South America
+    ('br', 'Brazil'),
+    ('ar', 'Argentina'),
+    ('co', 'Colombia'),
+    ('pe', 'Peru'),
+    ('mx', 'Mexico'),
+    ('ve', 'Venezuela'),
+    ('cl', 'Chile'),
+
+    ('au', 'Australia'),
+    ('nz', 'New Zealand'),
+    ('pg', 'Papua New Guinea'),
+
+    ('ng', 'Nigeria'),
+    ('eg', 'Egypt'),
+    ('za', 'South Africa'),
+    ('ke', 'Kenya'),
+    ('ma', 'Morocco'),
+    ('dz', 'Algeria'),
+
+    # Other
+    ('other', 'Other'),
+]
+
+
+GENDER_CHOICES = [
+    # Common binary and trans identities
+    ('male', 'Male'),
+    ('female', 'Female'),
+    ('cis_male', 'Cis Male'),
+    ('cis_female', 'Cis Female'),
+    ('trans_male', 'Trans Male'),
+    ('trans_female', 'Trans Female'),
+    ('trans_man', 'Trans Man'),
+    ('trans_woman', 'Trans Woman'),
+    ('ftm', 'FTM (Female to Male)'),
+    ('mtf', 'MTF (Male to Female)'),
+
+    # Non-binary umbrella
+    ('non_binary', 'Non-Binary'),
+    ('genderqueer', 'Genderqueer'),
+    ('genderfluid', 'Genderfluid'),
+    ('agender', 'Agender'),
+    ('bigender', 'Bigender'),
+    ('demiboy', 'Demiboy'),
+    ('demigirl', 'Demigirl'),
+    ('genderflux', 'Genderflux'),
+    ('androgyne', 'Androgyne'),
+    ('neutrois', 'Neutrois'),
+    ('pangender', 'Pangender'),
+    ('polygender', 'Polygender'),
+    ('trigender', 'Trigender'),
+    ('maverique', 'Maverique'),
+    ('two_spirit', 'Two-Spirit'),
+    ('third_gender', 'Third Gender'),
+    ('xenogender', 'Xenogender'),
+    ('autigender', 'Autigender'),
+    ('apora_gender', 'Aporagender'),
+    ('caelgender', 'Caelgender'),
+    ('juxera', 'Juxera'),
+    ('egogender', 'Egogender'),
+    ('genderblank', 'Genderblank'),
+    ('genderfree', 'Genderfree'),
+    ('genderless', 'Genderless'),
+    ('quoisgender', 'Quoigender'),
+    ('omnigender', 'Omnigender'),
+    ('intergender', 'Intergender'),
+    ('graygender', 'Graygender'),
+
+    # Cultural / regional gender categories
+    ('hijra', 'Hijra'),
+    ('bakla', 'Bakla'),
+    ('bissu', 'Bissu'),
+    ('faafafine', 'Faʻafafine'),
+    ('mahu', 'Māhū'),
+    ('muxe', 'Muxe'),
+    ('kathoey', 'Kathoey'),
+    ('waria', 'Waria'),
+    ('winkte', 'Winkte'),
+    ('vakasalewalewa', 'Vakasalewalewa'),
+    ('calabai', 'Calabai'),
+    ('calalai', 'Calalai'),
+
+    # Other/expanded
+    ('butch', 'Butch'),
+    ('femme', 'Femme'),
+    ('transfeminine', 'Transfeminine'),
+    ('transmasculine', 'Transmasculine'),
+    ('transandrogynous', 'Transandrogynous'),
+    ('eunuch', 'Eunuch'),
+    ('person_of_trans_experience', 'Person of Trans Experience'),
+    ('gender_nonconforming', 'Gender Nonconforming'),
+    ('gender_variant', 'Gender Variant'),
+    ('gender_bender', 'Gender Bender'),
+    ('questioning', 'Questioning'),
+    ('other', 'Other'),
+    ('prefer_not_to_say', 'Prefer not to say'),
+]
 
 
 class UserProfile(models.Model):
-    """
-    Extends Django's built-in User model with additional profile information.
-    """
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name='profile',
-        verbose_name=_('User')
-    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
 
-    phone_number = models.CharField(
-        max_length=20,
-        blank=False,
-        verbose_name=_('Phone Number')
-    )
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    gender = models.CharField(max_length=26, choices=GENDER_CHOICES)
+    email = models.EmailField(unique=True)
+    country = models.CharField(max_length=5, choices=COUNTRY_CHOICES)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
 
-    class Gender(models.TextChoices):
-        MALE = 'M', _('Male')
-        FEMALE = 'F', _('Female')
-        OTHER = 'O', _('Other')
-
-    gender = models.CharField(
-        max_length=1,
-        choices=Gender.choices,
-        blank=False,
-        verbose_name=_('Gender')
-    )
-
-    class Country(models.TextChoices):
-        SOUTH_KOREA = 'KR', _('South Korea')
-        UNITED_KINGDOM = 'GB', _('United Kingdom')
-        UNITED_STATES = 'US', _('United States')
-        CHINA = 'CN', _('People\'s Republic of China')
-        TAIWAN = 'TW', _('Republic of China')
-        JAPAN = 'JP', _('Japan')
-        CANADA = 'CA', _('Canada')
-        AUSTRALIA = 'AU', _('Australia')
-        GERMANY = 'DE', _('Germany')
-        FRANCE = 'FR', _('France')
-
-    country = models.CharField(
-        max_length=2,
-        choices=Country.choices,
-        blank=False,
-        verbose_name=_('Country')
-    )
-
-    user_profile_img = models.TextField(
-        blank=True,
-        null=True,
-        verbose_name=_('Profile Image (Base64)')
-    )
-
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name=_('Created At')
-    )
-    updated_at = models.DateTimeField(
-        auto_now=True,
-        verbose_name=_('Updated At')
-    )
-
-    class Meta:
-        verbose_name = _('User Profile')
-        verbose_name_plural = _('User Profiles')
-        ordering = ['-created_at']
+    # Base64-encoded PNG image (128x128)
+    profile_image_base64 = models.TextField(help_text="Base64 encoded PNG image (128x128)")
 
     def __str__(self):
-        return f"{self.user.username}'s Profile"
+        return f"{self.first_name} {self.last_name} ({self.user.username})"
 
-    def get_full_name(self):
-        """Return the user's full name from the associated User model."""
-        return self.user.get_full_name()
 
-    def get_profile_image_url(self):
-        """Return the data URL for the profile image if available."""
-        if self.user_profile_img:
-            return f"data:image/png;base64,{self.user_profile_img}"
-        return None
+class UserAccountAuthentication(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='authentication')
+
+    account_disabled = models.BooleanField(default=False, help_text="Indicates if the account is disabled")
+
+    def __str__(self):
+        return f"Authentication for {self.user.username}"

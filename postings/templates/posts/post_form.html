@@ -1,0 +1,89 @@
+{# templates/posts/post_form.html #}
+{% extends 'layout/layout_write.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}
+    Create Post
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-5 d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="card p-4 shadow-sm" style="max-width: 600px; width: 100%;">
+            <h3 class="text-center mb-4">Create a New Post</h3>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {# ---------- title ---------- #}
+                <div class="mb-3">
+                    {{ form.title.label_tag }}
+                    {{ form.title|add_class:"form-control" }}
+                    {% if form.title.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.title.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# ---------- description ---------- #}
+                <div class="mb-3">
+                    {{ form.description.label_tag }}
+                    {{ form.description|add_class:"form-control" }}
+                    {% if form.description.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.description.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# ---------- category ---------- #}
+                <div class="mb-3">
+                    {{ form.category.label_tag }}
+                    {{ form.category|add_class:"form-select" }}
+                    {% if form.category.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.category.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# ---------- max_accepted_applicants ---------- #}
+                <div class="mb-3">
+                    {{ form.max_accepted_applicants.label_tag }}
+                    {{ form.max_accepted_applicants|add_class:"form-control" }}
+                    {% if form.max_accepted_applicants.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.max_accepted_applicants.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# ---------- deadline ---------- #}
+                <div class="mb-3">
+                    {{ form.deadline.label_tag }}
+                    {{ form.deadline|add_class:"form-control" }}
+                    {% if form.deadline.help_text %}
+                        <div class="form-text">{{ form.deadline.help_text }}</div>
+                    {% endif %}
+                    {% if form.deadline.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.deadline.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# ---------- non-field errors ---------- #}
+                {% if form.non_field_errors %}
+                    <div class="invalid-feedback d-block mb-3">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <button type="submit" class="btn btn-primary w-100 py-2">Publish Post</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}{% endblock %}

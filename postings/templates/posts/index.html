@@ -1,0 +1,119 @@
+{% extends 'layout/layout_write.html' %}
+{% load static %}
+
+{% block title %}Posts{% endblock %}
+
+{% block content %}
+    <div class="container mt-5" style="max-width: 900px;">
+        <h2 class="mb-4 text-center">Open Posts</h2>
+
+        {% if page_obj.object_list %}
+            {% for post in page_obj.object_list %}
+                <div id="card-{{ post.uuid }}" class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a class="stretched-link text-decoration-none"
+                               href="{% url 'postings:post_detail' uuid=post.uuid %}">
+                                {{ post.title }}
+                            </a>
+                        </h5>
+
+                        <h6 class="card-subtitle text-muted mb-2">
+                            {{ post.get_category_display }} • by {{ post.author.username }}
+                        </h6>
+
+                        <p class="card-text mb-2" style="white-space: pre-wrap;">
+                            {{ post.description|truncatechars:300 }}
+                        </p>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small>
+                                Accepted {{ post.accepted_applicants_count }} /
+                                {{ post.max_accepted_applicants }}
+                            </small>
+
+                            {# --- countdown --- #}
+                            <span class="badge bg-primary countdown"
+                                  data-deadline="{{ post.deadline|date:'c' }}">
+            </span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            {# ---------- pagination controls ---------- #}
+            <nav aria-label="Pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Prev</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Prev</span></li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if num == page_obj.number %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Next</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% else %}
+            <div class="alert alert-info text-center">No open posts at the moment.</div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        (function () {
+            "use strict";
+
+            function pad(n) {
+                return n.toString().padStart(2, "0");
+            }
+
+            function updateCountdown() {
+                const now = Date.now();
+
+                document.querySelectorAll(".countdown").forEach(function (el) {
+                    const deadlineStr = el.dataset.deadline;
+                    if (!deadlineStr) return;
+                    const deadline = Date.parse(deadlineStr);
+
+                    const diffMs = deadline - now;
+                    if (diffMs <= 0) {
+                        // hide expired card
+                        const card = el.closest(".card");
+                        if (card) card.remove();
+                        return;
+                    }
+
+                    const secs = Math.floor(diffMs / 1000) % 60;
+                    const mins = Math.floor(diffMs / (1000 * 60)) % 60;
+                    const hrs = Math.floor(diffMs / (1000 * 60 * 60)) % 24;
+                    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+                    let text = "";
+                    if (days) text += days + "d ";
+                    text += pad(hrs) + ":" + pad(mins) + ":" + pad(secs);
+                    el.textContent = text;
+                });
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        })();
+    </script>
+{% endblock %}

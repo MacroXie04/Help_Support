@@ -25,12 +25,23 @@ SECRET_KEY = 'django-insecure-^#p)a%cdk^)-6zcs$fc5-ht(bgurw5#6dw7ru+zg(ed)1h=q^a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Enable Web Admin Page
+WEB_ADMIN = True
+
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    # Installed apps
+    'chat',
+    'users',
+    'postings',
+
+    'widget_tweaks',
+
+    # Default Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
